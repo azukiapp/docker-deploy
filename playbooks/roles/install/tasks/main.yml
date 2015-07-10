@@ -1,0 +1,15 @@
+---
+- name: Start docker service
+  service: name=docker state=started
+
+- name: Add azk apt key
+  apt_key: keyserver="{{ azk_keyserver }}" id="{{ azk_keyid }}"
+
+- name: Add azk repo
+  apt_repository: repo="{{ azk_repo }}" state=present
+
+- name: Ensure azk is installed
+  apt: pkg=azk state=present update_cache=true
+
+- name: Ensure git is installed
+  apt: pkg=git state=present update_cache=true

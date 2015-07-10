@@ -1,0 +1,8 @@
+---
+docker_ip: 172.17.42.1
+azk_balancer_port: 11000
+azk_dns_port: 53
+
+kill_ssh_command: pkill -f sshd
+azk_agent_start_command: azk agent start
+azk_start_command: azk start

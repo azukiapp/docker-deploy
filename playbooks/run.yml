@@ -1,0 +1,11 @@
+---
+- hosts: all
+  vars:
+    - azk_agent_start_command: azk agent start
+    - azk_start_command: azk start
+  tasks:
+    - name: Start azk agent
+      command: chdir={{ src_dir }} {{ azk_agent_start_command }}
+
+    - name: Start azk
+      command: chdir={{ src_dir }} {{ azk_start_command }}

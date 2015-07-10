@@ -1,0 +1,33 @@
+---
+- name: Ensure .ssh dir exists
+  file: path=/home/{{ user }}/.ssh state=directory owner={{ user }} group={{ user }} mode=0775
+
+- name: Ensure authorized_keys exists
+  copy: src=authorized_keys dest=/home/{{ user }}/.ssh/authorized_keys owner={{ user }} mode=0600
+
+- name: Ensure repository directories exists
+  file: path={{ git_dir }} owner={{ user }} group={{ user }} mode=0775 state=directory
+
+- name: Create git work tree
+  file: path={{ src_dir }} owner={{ user }} group={{ user }} mode=0775 state=directory
+
+- name: Create git repository
+  command: chdir={{ git_dir }} creates={{ git_dir }}/HEAD git init --bare
+
+- name: Ensure repositories permisions
+  command: chdir={{ git_dir }} chown {{ user }}.{{ user }} -R .
+
+- name: Ensure post-receive hooks exists
+  template: src=post-receive.j2 dest={{ git_dir }}/hooks/post-receive owner={{ user }} mode=0755
+
+- name: Ensure /etc/resolver path exists
+  file: path=/etc/resolver state=directory
+
+- name: Create /etc/resolver file
+  template: src=resolver.j2 dest=/etc/resolver/{{ azk_domain }}
+
+- name: Set iptables to forward traffic to load balancer
+  command: iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ docker_ip }}:{{ azk_balancer_port }}
+
+- name: Add current user to docker group
+  user: name={{ user }} groups=docker append=yes

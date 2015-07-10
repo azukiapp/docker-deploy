@@ -1,0 +1,3 @@
+#!/bin/sh
+# post-receive hook
+git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout -f
