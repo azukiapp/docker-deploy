@@ -17,7 +17,7 @@
 - name: Create git repository
   command: chdir={{ git_dir }} creates={{ git_dir }}/HEAD git init --bare
 
-- name: Ensure repositories permisions
+- name: Ensure repository permissions
   command: chdir={{ git_dir }} chown {{ user }}.{{ user }} -R .
 
 - name: Ensure post-receive hooks exists

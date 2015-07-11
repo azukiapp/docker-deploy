@@ -10,4 +10,4 @@ RUN apt-get -y update \
   && apt-get install -y sshpass \
   && ansible-galaxy install -r files/requirements.txt
 
-ENTRYPOINT ["./deploy.sh"]
+ENTRYPOINT ["/azk/deploy/deploy.sh"]
