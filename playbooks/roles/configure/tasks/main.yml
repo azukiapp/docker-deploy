@@ -1,4 +1,7 @@
 ---
+- name: Create user and add him to docker group
+  user: name={{ user }} groups=docker append=yes
+
 - name: Ensure .ssh dir exists
   file: path=/home/{{ user }}/.ssh state=directory owner={{ user }} group={{ user }} mode=0775
 
@@ -28,6 +31,3 @@
 
 - name: Set iptables to forward traffic to load balancer
   command: iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ docker_ip }}:{{ azk_balancer_port }}
-
-- name: Add current user to docker group
-  user: name={{ user }} groups=docker append=yes
