@@ -1,4 +1,12 @@
+# This image includes:
+#
+# azukiapp/deploy:
+# * Ubuntu 14.04
+# * Ansible
+# * SSHPass
+
 FROM ansible/ubuntu14.04-ansible
+MAINTAINER Azuki <support@azukiapp.com>
 
 RUN mkdir -p /azk/deploy
 WORKDIR /azk/deploy
