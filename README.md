@@ -21,7 +21,7 @@ Image content:
 The following environment variables are available for configuring the deployment using this image:
 
 - **ANSIBLE_SSH_HOST**: Deploy server's public IP;
-- **ANSIBLE_SSH_ROOT_PASS**: Deploy server's root password;
+- **ANSIBLE_SSH_ROOT_PASS** (*optional*): Deploy server's root password. It's optional because you can have added your public ssh key into the authorized_keys files in the remote server;
 - **PROJECT_SRC_PATH**: Project source code path;
 - **LOCAL_SSH_KEYS_PATH** (*optional*): Path containing SSH keys. if no path is given, a new SSH public/private key pair will be generated;
 - **ANSIBLE_SSH_USER** (*optional, default: git*): Username created (or used if it exists) in the remote server to deploy files and run the app;

@@ -2,8 +2,7 @@
 
 set -x
 
-[ -z $ANSIBLE_SSH_HOST ]          && echo "ANSIBLE_SSH_HOST is missing." && exit 1
-[ -z $ANSIBLE_SSH_ROOT_PASS ]     && echo "ANSIBLE_SSH_ROOT_PASS is missing." && exit 1
+[ -z $ANSIBLE_SSH_HOST ] && echo "ANSIBLE_SSH_HOST is missing." && exit 1
 
 if [ -z ${PROJECT_SRC_PATH} ] || [ ! -d ${PROJECT_SRC_PATH} ]; then
   echo "Failed to locate source dir ${PROJECT_SRC_PATH}"
@@ -23,14 +22,19 @@ cd ${ROOT_PATH}
 
 set -e
 
-mkdir -p /root/.ssh
+ROOT_SSH_PATH="/root/.ssh"
+mkdir -p ${ROOT_SSH_PATH}
+echo > playbooks/roles/configure/files/authorized_keys
 if [ -d ${LOCAL_SSH_KEYS_PATH} ] && quiet ls ${LOCAL_SSH_KEYS_PATH}/*.pub; then
-  cp -R ${LOCAL_SSH_KEYS_PATH}/* /root/.ssh
-  cat /root/.ssh/*.pub >> playbooks/roles/configure/files/authorized_keys
+  if [ "${LOCAL_SSH_KEYS_PATH%/}" != "${ROOT_SSH_PATH}" ]; then
+    cp -R ${LOCAL_SSH_KEYS_PATH}/* ${ROOT_SSH_PATH}
+  fi
 else
-  ssh-keygen -t rsa -b 4096 -N "" -f /root/.ssh/id_rsa
-  cat /root/.ssh/id_rsa.pub >> playbooks/roles/configure/files/authorized_keys
+  if ! quiet ls ${ROOT_SSH_PATH}/id_rsa.pub; then
+    ssh-keygen -t rsa -b 4096 -N "" -f ${ROOT_SSH_PATH}/id_rsa
+  fi
 fi
+cat ${ROOT_SSH_PATH}/*.pub >> playbooks/roles/configure/files/authorized_keys
 
 export ANSIBLE_HOST_KEY_CHECKING=False
 
@@ -48,7 +52,7 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 [ -z $GIT_REMOTE ] && \
   GIT_REMOTE='azk_deploy'
 
-if git remote | grep "^${GIT_REMOTE}$"; then
+if ( cd ${PROJECT_SRC_PATH}; git remote | grep -q "^${GIT_REMOTE}$" ); then
   REMOTE_SRC_DIR=$( cd ${PROJECT_SRC_PATH}; git remote -v | grep -P "^${GIT_REMOTE}\t" | head -1 | awk '{ print $2 }' | sed 's/.*\:\/\/.*@[^:]*\(:[0-9]\+\)\?//' | sed 's/\.git//' )
 else
   [ -z $REMOTE_SRC_DIR_ID ] && \
@@ -62,7 +66,7 @@ REMOTE_GIT_DIR="${REMOTE_SRC_DIR}.git"
   echo -n "default ansible_ssh_host=${ANSIBLE_SSH_HOST} "
   echo -n "ansible_ssh_port=${ANSIBLE_SSH_PORT} "
   echo -n "ansible_ssh_user=${ANSIBLE_SSH_ROOT_USER} "
-  echo -n "ansible_ssh_pass=${ANSIBLE_SSH_ROOT_PASS}"
+  ( [ ! -z ${ANSIBLE_SSH_ROOT_PASS} ] && echo -n "ansible_ssh_pass=${ANSIBLE_SSH_ROOT_PASS}" ) || true
 ) > /etc/ansible/hosts
 
 if [ -z ${RUN_SETUP} ] || [ "${RUN_SETUP}" = "true" ]; then
