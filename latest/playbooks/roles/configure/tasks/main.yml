@@ -1,33 +1,80 @@
 ---
 - name: Create user and add him to docker group
-  user: name={{ user }} groups=docker append=yes
+  user:
+    name={{ user }}
+    groups=docker
+    append=yes
 
 - name: Ensure .ssh dir exists
-  file: path=/home/{{ user }}/.ssh state=directory owner={{ user }} group={{ user }} mode=0775
+  file:
+    path=/home/{{ user }}/.ssh
+    state=directory
+    owner={{ user }}
+    group={{ user }}
+    mode=0775
 
 - name: Ensure authorized_keys exists
-  copy: src=authorized_keys dest=/home/{{ user }}/.ssh/authorized_keys owner={{ user }} mode=0600
+  copy:
+    src=authorized_keys
+    dest=/home/{{ user }}/.ssh/authorized_keys
+    owner={{ user }}
+    mode=0600
 
 - name: Ensure repository directories exists
-  file: path={{ git_dir }} owner={{ user }} group={{ user }} mode=0775 state=directory
+  file:
+    path={{ git_dir }}
+    state=directory
+    owner={{ user }}
+    group={{ user }}
+    mode=0775
 
 - name: Create git work tree
-  file: path={{ src_dir }} owner={{ user }} group={{ user }} mode=0775 state=directory
+  file:
+    path={{ src_dir }}
+    state=directory
+    owner={{ user }}
+    group={{ user }}
+    mode=0775
 
 - name: Create git repository
-  command: chdir={{ git_dir }} creates={{ git_dir }}/HEAD git init --bare
+  command:
+    chdir={{ git_dir }}
+    creates={{ git_dir }}/HEAD
+    git init --bare
 
 - name: Ensure repository permissions
-  command: chdir={{ git_dir }} chown {{ user }}.{{ user }} -R .
+  command:
+    chdir={{ git_dir }}
+    chown {{ user }}.{{ user }} -R .
 
 - name: Ensure post-receive hooks exists
-  template: src=post-receive.j2 dest={{ git_dir }}/hooks/post-receive owner={{ user }} mode=0755
+  template:
+    src=post-receive.j2
+    dest={{ git_dir }}/hooks/post-receive
+    owner={{ user }}
+    mode=0755
 
 - name: Ensure /etc/resolver path exists
-  file: path=/etc/resolver state=directory
+  file:
+    path=/etc/resolver
+    state=directory
 
 - name: Create /etc/resolver file
-  template: src=resolver.j2 dest=/etc/resolver/{{ azk_domain }}
+  template:
+    src=resolver.j2
+    dest=/etc/resolver/{{ azk_domain }}
 
 - name: Set iptables to forward traffic to load balancer
-  command: iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ docker_ip }}:{{ azk_balancer_port }}
+  command:
+    iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ docker_ip }}:{{ azk_balancer_port }}
+
+- name: Adding AZK_HOST_IP env var into .bashrc
+  lineinfile:
+    dest=/home/{{ user }}/.bashrc
+    line="export AZK_HOST_IP=\"{{ ansible_default_ipv4.address }}\""
+    regexp="^export\ AZK_HOST_IP="
+    owner={{ user }}
+    mode=0644
+    state=present
+    insertafter=EOF
+    create=True

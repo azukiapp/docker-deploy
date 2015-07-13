@@ -12,7 +12,7 @@ RUN mkdir -p /azk/deploy
 WORKDIR /azk/deploy
 COPY files ./files
 COPY playbooks ./playbooks
-COPY deploy.sh ./deploy.sh
+COPY deploy.sh deploy-setup deploy-run ./
 
 RUN apt-get -y update \
   && apt-get install -y sshpass \
