@@ -4,7 +4,9 @@ set -x
 
 [ -z $ANSIBLE_SSH_HOST ] && echo "ANSIBLE_SSH_HOST is missing." && exit 1
 
-if [ -z ${PROJECT_SRC_PATH} ] || [ ! -d ${PROJECT_SRC_PATH} ]; then
+[ -z ${PROJECT_SRC_PATH} ] && PROJECT_SRC_PATH="/azk/deploy/src"
+
+if [ ! -d ${PROJECT_SRC_PATH} ]; then
   echo "Failed to locate source dir ${PROJECT_SRC_PATH}"
   exit 1
 fi
@@ -23,6 +25,7 @@ cd ${ROOT_PATH}
 set -e
 
 ROOT_SSH_PATH="/root/.ssh"
+[ -z ${LOCAL_SSH_KEYS_PATH} ] && LOCAL_SSH_KEYS_PATH="/azk/deploy/.ssh"
 mkdir -p ${ROOT_SSH_PATH}
 echo > playbooks/roles/configure/files/authorized_keys
 if [ -d ${LOCAL_SSH_KEYS_PATH} ] && quiet ls ${LOCAL_SSH_KEYS_PATH}/*.pub; then
