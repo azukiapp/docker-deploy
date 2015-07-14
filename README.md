@@ -22,18 +22,17 @@ The following environment variables are available for configuring the deployment
 
 - **REMOTE_HOST**: Deploy server's public IP;
 - **REMOTE_ROOT_PASS** (*optional*): Deploy server's root password. It's optional because you can have added your public ssh key into the authorized_keys files in the remote server;
-- **LOCAL_PROJECT_PATH**: Project source code path;
-- **LOCAL_DOT_SSH_PATH** (*optional*): Path containing SSH keys. if no path is given, a new SSH public/private key pair will be generated;
+- **LOCAL_PROJECT_PATH**: (*optional, default: /azk/deploy/src*) Project source code path;
+- **LOCAL_DOT_SSH_PATH** (*optional, default: /azk/deploy/.ssh*): Path containing SSH keys. If no path is given, a new SSH public/private key pair will be generated;
 - **REMOTE_USER** (*optional, default: git*): Username created (or used if it exists) in the remote server to deploy files and run the app;
-- **REMOTE_PASS** (*optional*): `REMOTE_USER`'s password. If it's a new user, a new random password will be generated;
+- **REMOTE_PASS** (*optional*): `REMOTE_USER`'s password. If it's a new user, a random password will be generated;
 - **REMOTE_ROOT_USER** (*optional, default: root*): Root user in the remote server;
 - **REMOTE_PORT** (*optional, default: 22*): SSH remote port;
 - **AZK_DOMAIN** (*optional, default: azk.dev.io*): azk domain in the current namespace;
 - **REMOTE_PROJECT_PATH_ID** (*optional*): By default, the project will be placed at */home/`REMOTE_USER`/`REMOTE_PROJECT_PATH_ID`* (i.e., `REMOTE_PROJECT_PATH`) in the remote server. If no value is given, a random id will be generated;
 - **REMOTE_PROJECT_PATH** (*optional*): The path where the project will be stored in the remote server. If no value is given, it will be */home/`REMOTE_USER`/`REMOTE_PROJECT_PATH_ID`*;
-- **GIT_REMOTE** (*optional, default: azk_deploy*): Remote added to git pointing deploy server (current limitation: it will be and must be in the pattern `ssh://git@45.55.169.19:22/home/git/a1f4adb.git`);
-- **RUN_SETUP** (*default: true*): Boolean variable that defines if the remote server setup step should be run;
-- **RUN_DEPLOY** (*default: true*): Boolean variable that defines if the deploy step should be run;
+- **RUN_SETUP** (*optional, default: true*): Boolean variable that defines if the remote server setup step should be run;
+- **RUN_DEPLOY** (*optional, default: true*): Boolean variable that defines if the deploy step should be run;
 
 ### Usage with `azk`
 
@@ -55,10 +54,10 @@ systems({
     },
     scalable: {"default": 0, "limit": 0},
     envs: {
-      REMOTE_HOST:      "`SERVER_PUBLIC_IP`",
-      REMOTE_ROOT_PASS: "`SERVER_ROOT_PASS`",
-      LOCAL_PROJECT_PATH:      "/azk/deploy/src",
-      LOCAL_DOT_SSH_PATH:   "/azk/deploy/.ssh",
+      REMOTE_HOST:        "`SERVER_PUBLIC_IP`",
+      REMOTE_ROOT_PASS:   "`SERVER_ROOT_PASS`",
+      LOCAL_PROJECT_PATH: "/azk/deploy/src",
+      LOCAL_DOT_SSH_PATH: "/azk/deploy/.ssh",
     },
   },
 });
@@ -80,8 +79,6 @@ $ docker run --rm --name deploy-run \
   -v `LOCAL_DOT_SSH_PATH`:/azk/deploy/.ssh
   -e "REMOTE_HOST=`SERVER_PUBLIC_IP`" \
   -e "REMOTE_ROOT_PASS=`SERVER_ROOT_PASS`" \
-  -e "LOCAL_PROJECT_PATH=/azk/deploy/src" \
-  -e "LOCAL_DOT_SSH_PATH=/azk/deploy/.ssh" \
   -w /azk/deploy \
   azukiapp/deploy
 ```
