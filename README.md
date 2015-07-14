@@ -1,7 +1,7 @@
 [azukiapp/deploy](http://images.azk.io/#/deploy)
 ==================
 
-Base docker image deploy an app using [`azk`](http://azk.io)
+Base docker image to deploy an app using [`azk`](http://azk.io)
 
 Versions (tags)
 ---
@@ -17,7 +17,7 @@ Image content:
 - [Ansible](http://www.ansible.com)
 - [SSHPass](http://sourceforge.net/projects/sshpass/)
 
-### Configuring
+### Configuration
 The following environment variables are available for configuring the deployment using this image:
 
 - **REMOTE_HOST**: Deploy server's public IP;
@@ -34,10 +34,15 @@ The following environment variables are available for configuring the deployment
 - **RUN_SETUP** (*optional, default: true*): Boolean variable that defines if the remote server setup step should be run;
 - **RUN_DEPLOY** (*optional, default: true*): Boolean variable that defines if the deploy step should be run;
 
-### Usage with `azk`
+### Usage
 
-Consider you want to deploy your app in a server which public IP is `SERVER_PUBLIC_IP` and root user's password is `SERVER_ROOT_PASS`, and your local .ssh keys are placed at `LOCAL_DOT_SSH_PATH` (usually this path is `$HOME`/.ssh).
+Consider you want to deploy your app in a server which public IP is `SERVER_PUBLIC_IP` and root user's password is `SERVER_ROOT_PASS`, and your local SSH keys are placed at `LOCAL_DOT_SSH_PATH` (usually this path is `$HOME`/.ssh). Remember that passing a root password is optional, since you can always put your local SSH public key into `$HOME/.ssh/authorized_keys` file in the host server.
+
+#### Usage with `azk`
+
 Example of using this image with [azk](http://azk.io):
+
+- Add the `deploy` system to your Azkfile.js:
 
 ```js
 /**
@@ -46,6 +51,8 @@ Example of using this image with [azk](http://azk.io):
  
 // Adds the systems that shape your system
 systems({
+  // ...
+
   deploy: {
     image: {"docker": "azukiapp/deploy"},
     mounts: {
@@ -63,9 +70,14 @@ systems({
 });
 ```
 
-### Usage with `docker`
+- Run:
+```bash
+$ azk shell deploy
+```
 
-To create the image `azukiapp/deploy`, execute the following command on the deploy folder:
+#### Usage with `docker`
+
+To create the image `azukiapp/deploy`, execute the following command on the deploy image folder:
 
 ```sh
 $ docker build -t azukiapp/deploy .
@@ -79,7 +91,6 @@ $ docker run --rm --name deploy-run \
   -v `LOCAL_DOT_SSH_PATH`:/azk/deploy/.ssh
   -e "REMOTE_HOST=`SERVER_PUBLIC_IP`" \
   -e "REMOTE_ROOT_PASS=`SERVER_ROOT_PASS`" \
-  -w /azk/deploy \
   azukiapp/deploy
 ```
 
