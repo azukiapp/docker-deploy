@@ -88,7 +88,7 @@ To run the image:
 ```sh
 $ docker run --rm --name deploy-run \
   -v `LOCAL_PROJECT_PATH`:/azk/deploy/src \
-  -v `LOCAL_DOT_SSH_PATH`:/azk/deploy/.ssh
+  -v `LOCAL_DOT_SSH_PATH`:/azk/deploy/.ssh \
   -e "REMOTE_HOST=`SERVER_PUBLIC_IP`" \
   -e "REMOTE_ROOT_PASS=`SERVER_ROOT_PASS`" \
   azukiapp/deploy
