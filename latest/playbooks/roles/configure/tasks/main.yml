@@ -70,7 +70,7 @@
 
 - name: Adding AZK_HOST_IP env var into .bashrc
   lineinfile:
-    dest=/home/{{ user }}/.bashrc
+    dest=/home/{{ user }}/.ip_addr
     line="export AZK_HOST_IP=\"{{ ansible_default_ipv4.address }}\""
     regexp="^export\ AZK_HOST_IP="
     owner={{ user }}

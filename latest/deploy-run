@@ -44,13 +44,6 @@ if [ -z ${RUN_SETUP} ] || [ "${RUN_SETUP}" = "true" ]; then
   ansible-playbook playbooks/reset.yml || true
 fi
 
-(
-  echo -n "default ansible_ssh_host=${REMOTE_HOST} "
-  echo -n "ansible_ssh_port=${REMOTE_PORT} "
-  echo -n "ansible_ssh_user=${REMOTE_USER} "
-  echo -n "ansible_ssh_pass=${REMOTE_PASS}"
-) > /etc/ansible/hosts
-
 if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
   # Deploying
   cd ${LOCAL_PROJECT_PATH}

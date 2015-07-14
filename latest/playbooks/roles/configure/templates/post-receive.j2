@@ -1,6 +1,6 @@
 #!/bin/sh
 # post-receive hook
-. /home/{{ user }}/.bashrc
+. /home/{{ user }}/.ip_addr
 git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout -f
 cd {{ src_dir }}
 {{ azk_agent_start_command }}
