@@ -63,8 +63,6 @@ systems({
     envs: {
       REMOTE_HOST:        "`SERVER_PUBLIC_IP`",
       REMOTE_ROOT_PASS:   "`SERVER_ROOT_PASS`",
-      LOCAL_PROJECT_PATH: "/azk/deploy/src",
-      LOCAL_DOT_SSH_PATH: "/azk/deploy/.ssh",
     },
   },
 });
