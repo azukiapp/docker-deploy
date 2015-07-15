@@ -53,6 +53,6 @@ if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
 fi
 
 echo
-echo "App successfully deployed at ${REMOTE_HOST}."
+echo "App successfully deployed at http://${REMOTE_HOST}"
 
 set +e
