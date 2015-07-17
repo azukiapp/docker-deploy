@@ -3,5 +3,6 @@
   sudo: true
   roles:
     - role: angstwad.docker_ubuntu
+      docker_pkg_name: lxc-docker-1.6.2
     - role: install
     - role: configure
