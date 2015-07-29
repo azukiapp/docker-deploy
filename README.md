@@ -29,9 +29,11 @@ The following environment variables are available for configuring the deployment
 - **REMOTE_ROOT_USER** (*optional, default: root*): Root user in the remote server;
 - **REMOTE_PORT** (*optional, default: 22*): SSH remote port;
 - **AZK_DOMAIN** (*optional, default: azk.dev.io*): azk domain in the current namespace;
+- **AZK_RESTART_COMMAND** (*optional, default: azk restart*): command to executed after each git push;
 - **REMOTE_PROJECT_PATH_ID** (*optional*): By default, the project will be placed at */home/`REMOTE_USER`/`REMOTE_PROJECT_PATH_ID`* (i.e., `REMOTE_PROJECT_PATH`) in the remote server. If no value is given, a random id will be generated;
 - **REMOTE_PROJECT_PATH** (*optional*): The path where the project will be stored in the remote server. If no value is given, it will be */home/`REMOTE_USER`/`REMOTE_PROJECT_PATH_ID`*;
 - **RUN_SETUP** (*optional, default: true*): Boolean variable that defines if the remote server setup step should be run;
+- **RUN_CONFIGURE** (*optional, default: true*): Boolean variable that defines if the remote server configuration should be run;
 - **RUN_DEPLOY** (*optional, default: true*): Boolean variable that defines if the deploy step should be run;
 
 ### Usage
@@ -48,7 +50,7 @@ Example of using this image with [azk](http://azk.io):
 /**
  * Documentation: http://docs.azk.io/Azkfile.js
  */
- 
+
 // Adds the systems that shape your system
 systems({
   // ...
@@ -72,7 +74,7 @@ systems({
 /**
  * Documentation: http://docs.azk.io/Azkfile.js
  */
- 
+
 // Adds the systems that shape your system
 systems({
   example: {

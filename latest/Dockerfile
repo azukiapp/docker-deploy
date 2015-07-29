@@ -10,12 +10,14 @@ MAINTAINER Azuki <support@azukiapp.com>
 
 RUN mkdir -p /azk/deploy
 WORKDIR /azk/deploy
-COPY files ./files
-COPY playbooks ./playbooks
-COPY deploy.sh deploy-setup deploy-run ./
 
+COPY files ./files
 RUN apt-get -y update \
   && apt-get install -y sshpass \
   && ansible-galaxy install -r files/requirements.txt
+
+# TODO: split to another Dockerfile
+COPY playbooks ./playbooks
+COPY deploy.sh deploy-setup.sh deploy-run.sh ./
 
 ENTRYPOINT ["/azk/deploy/deploy.sh"]
