@@ -54,6 +54,9 @@ if [ -z ${RUN_CONFIGURE} ] || [ "${RUN_CONFIGURE}" = "true" ]; then
 fi
 
 if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
+  # copy envs
+  ansible-playbook playbooks/copy-envs.yml --extra-vars "user=${REMOTE_USER} src_dir=${REMOTE_PROJECT_PATH}"
+
   # Deploying
   (
     cd ${LOCAL_PROJECT_PATH}

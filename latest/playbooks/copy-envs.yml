@@ -1,0 +1,10 @@
+---
+- hosts: all
+  sudo: true
+  tasks:
+    - name: Copy .env to server
+      copy:
+        src=/azk/deploy/src/.env
+        dest={{ src_dir }}
+        owner={{ user }}
+        mode=0600
