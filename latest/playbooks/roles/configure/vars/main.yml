@@ -4,4 +4,3 @@ azk_balancer_port: 11000
 azk_dns_port: 53
 
 azk_agent_start_command: azk agent start
-azk_restart_command: azk restart
