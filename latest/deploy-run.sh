@@ -55,10 +55,12 @@ fi
 
 if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
   # Deploying
-  $( cd ${LOCAL_PROJECT_PATH}
-  quiet git remote rm ${GIT_REMOTE} || true
-  quiet git remote add ${GIT_REMOTE} ssh://${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PORT}${REMOTE_GIT_PATH} || true
-  git push ${GIT_REMOTE} ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} )
+  (
+    cd ${LOCAL_PROJECT_PATH}
+    quiet git remote rm ${GIT_REMOTE} || true
+    quiet git remote add ${GIT_REMOTE} ssh://${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PORT}${REMOTE_GIT_PATH} || true
+    git push ${GIT_REMOTE} ${GIT_CHECKOUT_COMMIT_BRANCH_TAG}
+  )
 fi
 
 echo
