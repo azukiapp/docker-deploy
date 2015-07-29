@@ -4,7 +4,7 @@
   tasks:
     - name: Copy .env to server
       copy:
-        src=/azk/deploy/src/.env
-        dest={{ src_dir }}
+        src={{ local_project_path }}/{{ env_file }}
+        dest={{ remote_project_path }}/.env
         owner={{ user }}
         mode=0600

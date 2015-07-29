@@ -35,6 +35,7 @@ The following environment variables are available for configuring the deployment
 - **RUN_SETUP** (*optional, default: true*): Boolean variable that defines if the remote server setup step should be run;
 - **RUN_CONFIGURE** (*optional, default: true*): Boolean variable that defines if the remote server configuration should be run;
 - **RUN_DEPLOY** (*optional, default: true*): Boolean variable that defines if the deploy step should be run;
+- **ENV_FILE** (*optional, default: `.env`*): The `.env file` path that will be copied to remote server.;
 
 ### Usage
 
