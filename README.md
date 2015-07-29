@@ -97,6 +97,11 @@ systems({
 $ azk shell deploy
 ```
 
+- Customizing `AZK_RESTART_COMMAND` for a specific deploy:
+```bash
+$ azk shell deploy -e AZK_RESTART_COMMAND="azk restart -R -vvvv --rebuild"
+```
+
 #### Usage with `docker`
 
 To create the image `azukiapp/deploy`, execute the following command on the deploy image folder:
