@@ -18,6 +18,6 @@ RUN apt-get -y update \
 
 # TODO: split to another Dockerfile
 COPY playbooks ./playbooks
-COPY deploy.sh deploy-setup.sh deploy-run.sh ./
+COPY deploy.sh deploy-setup.sh deploy-run.sh envs.sh ./
 
 ENTRYPOINT ["/azk/deploy/deploy.sh"]

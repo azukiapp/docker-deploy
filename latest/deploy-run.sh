@@ -7,25 +7,7 @@ cat ${LOCAL_ROOT_DOT_SSH_PATH}/*.pub >> playbooks/roles/configure/files/authoriz
 
 export ANSIBLE_HOST_KEY_CHECKING=False
 
-[ -z ${REMOTE_USER} ] && \
-  REMOTE_USER='git'
-[ -z ${REMOTE_PASS} ] && \
-  REMOTE_PASS=$( date +%s | sha256sum | base64 | head -c 32 | sha256sum | awk '{print $1}' )
-[ -z ${REMOTE_ROOT_USER} ] && \
-  REMOTE_ROOT_USER='root'
-[ -z ${REMOTE_PORT} ] && \
-  REMOTE_PORT='22'
-[ -z ${AZK_DOMAIN} ] && \
-  AZK_DOMAIN='dev.azk.io'
-[ -z "${AZK_RESTART_COMMAND}" ] && \
-  AZK_RESTART_COMMAND='azk restart -R'
-[ -z ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} ] && \
-  GIT_CHECKOUT_COMMIT_BRANCH_TAG='master'
-[ -z ${ENV_FILE} ] && \
-  ENV_FILE='.env'
-
-[ -z ${GIT_REMOTE} ] && \
-  GIT_REMOTE='azk_deploy'
+. /azk/deploy/envs.sh
 
 if ( cd ${LOCAL_PROJECT_PATH}; git remote | grep -q "^${GIT_REMOTE}$" ); then
   REMOTE_PROJECT_PATH=$( cd ${LOCAL_PROJECT_PATH}; git remote -v | grep -P "^${GIT_REMOTE}\t" | head -1 | awk '{ print $2 }' | sed 's/.*\:\/\/.*@[^:]*\(:[0-9]\+\)\?//' | sed 's/\.git//' )
@@ -52,12 +34,17 @@ fi
 
 if [ -z ${RUN_CONFIGURE} ] || [ "${RUN_CONFIGURE}" = "true" ]; then
   # Configuring
-  ansible-playbook playbooks/configure.yml --extra-vars "user=${REMOTE_USER} src_dir=${REMOTE_PROJECT_PATH} git_dir=${REMOTE_GIT_PATH} azk_domain=${AZK_DOMAIN} azk_restart_command='${AZK_RESTART_COMMAND}' git_checkout_commit_branch_tag=${GIT_CHECKOUT_COMMIT_BRANCH_TAG}"
+  ansible-playbook playbooks/configure.yml --extra-vars "user=${REMOTE_USER} src_dir=${REMOTE_PROJECT_PATH} git_dir=${REMOTE_GIT_PATH} azk_domain=${AZK_DOMAIN}"
 fi
 
 if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
   # copy envs
-  ansible-playbook playbooks/copy-envs.yml --extra-vars "user=${REMOTE_USER} local_project_path=${LOCAL_PROJECT_PATH} remote_project_path=${REMOTE_PROJECT_PATH} env_file=${ENV_FILE}"
+  ansible-playbook playbooks/envs.yml --extra-vars "\
+    user=${REMOTE_USER} env_file=${ENV_FILE} local_project_path=\"${LOCAL_PROJECT_PATH}\" \
+    remote_project_path=\"${REMOTE_PROJECT_PATH}\" git_reference=${GIT_CHECKOUT_COMMIT_BRANCH_TAG} \
+    azk_domain=${AZK_DOMAIN} azk_agent_start_command=\"${AZK_AGENT_START_COMMAND}\" azk_host=\"${AZK_HOST:-$AZK_HOST_IP}\" \
+    azk_restart_command=\"${AZK_RESTART_COMMAND}\"
+    "
 
   # Deploying
   (
@@ -69,6 +56,6 @@ if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
 fi
 
 echo
-echo "App successfully deployed at http://${REMOTE_HOST}"
+echo "App successfully deployed at ${AZK_HOST:-"http://$REMOTE_HOST"}"
 
 set +e

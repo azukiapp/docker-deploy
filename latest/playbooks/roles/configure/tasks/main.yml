@@ -67,14 +67,3 @@
 - name: Set iptables to forward traffic to load balancer
   command:
     iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ docker_ip }}:{{ azk_balancer_port }}
-
-- name: Adding AZK_HOST_IP env var into .bashrc
-  lineinfile:
-    dest=/home/{{ user }}/.ip_addr
-    line="export AZK_HOST_IP=\"{{ ansible_default_ipv4.address }}\""
-    regexp="^export\ AZK_HOST_IP="
-    owner={{ user }}
-    mode=0644
-    state=present
-    insertafter=EOF
-    create=True

@@ -70,7 +70,7 @@ systems({
   },
 });
 ```
-- Add the `AZK_HOST_IP` var to your main system http domains (so you can access it by http://`SERVER_PUBLIC_IP`)
+- Add the `AZK_HOST` var to your main system http domains (so you can access it by http://`SERVER_PUBLIC_IP`)
 ```js
 /**
  * Documentation: http://docs.azk.io/Azkfile.js
@@ -83,7 +83,7 @@ systems({
     http: {
       domains: [
         // ...
-        "#{process.env.AZK_HOST_IP}"
+        "#{process.env.AZK_HOST}"
       ]
     },
   },

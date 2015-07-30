@@ -2,5 +2,3 @@
 docker_ip: 172.17.42.1
 azk_balancer_port: 11000
 azk_dns_port: 53
-
-azk_agent_start_command: azk agent start

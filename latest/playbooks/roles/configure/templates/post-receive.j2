@@ -1,16 +1,16 @@
 #!/bin/sh
 # post-receive hook
-. /home/{{ user }}/.ip_addr
+. /home/{{ user }}/.env
 
-echo "$> git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout {{ git_checkout_commit_branch_tag }} -f"
-git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout {{ git_checkout_commit_branch_tag }} -f
+echo "$> git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} -f"
+git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} -f
 
 cd {{ src_dir }}
 
-echo "$> {{ azk_agent_start_command }}"
-{{ azk_agent_start_command }}
+echo "$> ${AZK_AGENT_START_COMMAND}"
+${AZK_AGENT_START_COMMAND}
 
 echo ""; echo "Starting azk. Maybe downloading images be needed. Please be patient."
 
-echo "$> {{ azk_restart_command }}"
-{{ azk_restart_command }}
+echo "$> ${AZK_RESTART_COMMAND}"
+sh -c "${AZK_RESTART_COMMAND}"
