@@ -7,25 +7,7 @@ cat ${LOCAL_ROOT_DOT_SSH_PATH}/*.pub >> playbooks/roles/configure/files/authoriz
 
 export ANSIBLE_HOST_KEY_CHECKING=False
 
-[ -z ${REMOTE_USER} ] && \
-  REMOTE_USER='git'
-[ -z ${REMOTE_PASS} ] && \
-  REMOTE_PASS=$( date +%s | sha256sum | base64 | head -c 32 | sha256sum | awk '{print $1}' )
-[ -z ${REMOTE_ROOT_USER} ] && \
-  REMOTE_ROOT_USER='root'
-[ -z ${REMOTE_PORT} ] && \
-  REMOTE_PORT='22'
-[ -z ${AZK_DOMAIN} ] && \
-  AZK_DOMAIN='dev.azk.io'
-[ -z "${AZK_RESTART_COMMAND}" ] && \
-  AZK_RESTART_COMMAND='azk restart -R'
-[ -z ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} ] && \
-  GIT_CHECKOUT_COMMIT_BRANCH_TAG='master'
-[ -z ${ENV_FILE} ] && \
-  ENV_FILE='.env'
-
-[ -z ${GIT_REMOTE} ] && \
-  GIT_REMOTE='azk_deploy'
+. /azk/deploy/envs.sh
 
 if ( cd ${LOCAL_PROJECT_PATH}; git remote | grep -q "^${GIT_REMOTE}$" ); then
   REMOTE_PROJECT_PATH=$( cd ${LOCAL_PROJECT_PATH}; git remote -v | grep -P "^${GIT_REMOTE}\t" | head -1 | awk '{ print $2 }' | sed 's/.*\:\/\/.*@[^:]*\(:[0-9]\+\)\?//' | sed 's/\.git//' )
