@@ -21,6 +21,8 @@ export ANSIBLE_HOST_KEY_CHECKING=False
   AZK_RESTART_COMMAND='azk restart -R'
 [ -z ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} ] && \
   GIT_CHECKOUT_COMMIT_BRANCH_TAG='master'
+[ -z ${ENV_FILE} ] && \
+  ENV_FILE='.env'
 
 [ -z ${GIT_REMOTE} ] && \
   GIT_REMOTE='azk_deploy'
@@ -54,6 +56,9 @@ if [ -z ${RUN_CONFIGURE} ] || [ "${RUN_CONFIGURE}" = "true" ]; then
 fi
 
 if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
+  # copy envs
+  ansible-playbook playbooks/copy-envs.yml --extra-vars "user=${REMOTE_USER} local_project_path=${LOCAL_PROJECT_PATH} remote_project_path=${REMOTE_PROJECT_PATH} env_file=${ENV_FILE}"
+
   # Deploying
   (
     cd ${LOCAL_PROJECT_PATH}
