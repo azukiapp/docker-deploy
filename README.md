@@ -114,12 +114,14 @@ To run the image:
 
 ```sh
 $ docker run --rm --name deploy-run \
-  -v `LOCAL_PROJECT_PATH`:$(pwd) \
-  -v `LOCAL_DOT_SSH_PATH`:$(echo $HOME)/.ssh \
+  -v $(pwd):/azk/deploy/src \
+  -v $HOME/.ssh:/azk/deploy/.ssh \
   -e "REMOTE_HOST=`SERVER_PUBLIC_IP`" \
   -e "REMOTE_ROOT_PASS=`SERVER_ROOT_PASS`" \
   azukiapp/deploy
 ```
+
+Before running, replace `SERVER_PUBLIC_IP` and `SERVER_ROOT_PASS` with the actual values.
 
 ## License
 
