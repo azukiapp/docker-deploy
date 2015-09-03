@@ -3,3 +3,4 @@
   sudo: true
   roles:
     - role: configure
+    - role: envs

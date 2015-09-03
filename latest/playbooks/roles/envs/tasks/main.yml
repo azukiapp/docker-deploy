@@ -1,0 +1,74 @@
+---
+- name: Copy .env to server
+  copy:
+    src={{ local_project_path }}/{{ env_file }}
+    dest={{ remote_project_path }}/.env
+    owner={{ user }}
+    mode=0600
+
+# $HOME/.env
+- name: Adding load $HOME/.env file into .profile
+  lineinfile:
+    dest=/home/{{ user }}/.profile
+    line=". $HOME/.env"
+    regexp="^\. \$HOME\/\.env"
+    owner={{ user }}
+    mode=0644
+    state=present
+    insertafter=EOF
+    create=True
+
+- name: Adding AZK_HOST env var into $HOME/.env
+  lineinfile:
+    dest=/home/{{ user }}/.env
+    line="export AZK_HOST=\"{{ azk_host }}\""
+    regexp="^export\ AZK_HOST="
+    owner={{ user }}
+    mode=0644
+    state=present
+    insertafter=EOF
+    create=True
+
+- name: Adding AZK_HOST_IP env var into $HOME/.env
+  lineinfile:
+    dest=/home/{{ user }}/.env
+    line="export AZK_HOST_IP=\"{{ ansible_default_ipv4.address }}\""
+    regexp="^export\ AZK_HOST_IP="
+    owner={{ user }}
+    mode=0644
+    state=present
+    insertafter=EOF
+    create=True
+
+- name: Adding AZK_AGENT_START_COMMAND env var into $HOME/.env
+  lineinfile:
+    dest=/home/{{ user }}/.env
+    line="export AZK_AGENT_START_COMMAND=\"{{ azk_agent_start_command }}\""
+    regexp="^export\ AZK_AGENT_START_COMMAND="
+    owner={{ user }}
+    mode=0644
+    state=present
+    insertafter=EOF
+    create=True
+
+- name: Adding AZK_RESTART_COMMAND env var into $HOME/.env
+  lineinfile:
+    dest=/home/{{ user }}/.env
+    line="export AZK_RESTART_COMMAND=\"{{ azk_restart_command }}\""
+    regexp="^export\ AZK_RESTART_COMMAND="
+    owner={{ user }}
+    mode=0644
+    state=present
+    insertafter=EOF
+    create=True
+
+- name: Adding GIT_CHECKOUT_COMMIT_BRANCH_TAG env var into $HOME/.env
+  lineinfile:
+    dest=/home/{{ user }}/.env
+    line="export GIT_CHECKOUT_COMMIT_BRANCH_TAG=\"{{ git_reference }}\""
+    regexp="^export\ GIT_CHECKOUT_COMMIT_BRANCH_TAG="
+    owner={{ user }}
+    mode=0644
+    state=present
+    insertafter=EOF
+    create=True

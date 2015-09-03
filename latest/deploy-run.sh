@@ -34,18 +34,14 @@ fi
 
 if [ -z ${RUN_CONFIGURE} ] || [ "${RUN_CONFIGURE}" = "true" ]; then
   # Configuring
-  ansible-playbook playbooks/configure.yml --extra-vars "user=${REMOTE_USER} src_dir=${REMOTE_PROJECT_PATH} git_dir=${REMOTE_GIT_PATH} azk_domain=${AZK_DOMAIN}"
-fi
-
-if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
-  # copy envs
-  ansible-playbook playbooks/envs.yml --extra-vars "\
+  ansible-playbook playbooks/configure.yml --extra-vars "\
     user=${REMOTE_USER} env_file=${ENV_FILE} local_project_path=\"${LOCAL_PROJECT_PATH}\" \
     remote_project_path=\"${REMOTE_PROJECT_PATH}\" git_reference=${GIT_CHECKOUT_COMMIT_BRANCH_TAG} \
     azk_domain=${AZK_DOMAIN} azk_agent_start_command=\"${AZK_AGENT_START_COMMAND}\" azk_host=\"${AZK_HOST:-$AZK_HOST_IP}\" \
-    azk_restart_command=\"${AZK_RESTART_COMMAND}\"
-    "
+    azk_restart_command=\"${AZK_RESTART_COMMAND}\" src_dir=\"${REMOTE_PROJECT_PATH}\" git_dir=\"${REMOTE_GIT_PATH}\"
+fi
 
+if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
   # Deploying
   (
     cd ${LOCAL_PROJECT_PATH}
