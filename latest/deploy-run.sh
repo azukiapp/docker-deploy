@@ -39,6 +39,7 @@ if [ -z ${RUN_CONFIGURE} ] || [ "${RUN_CONFIGURE}" = "true" ]; then
     remote_project_path=\"${REMOTE_PROJECT_PATH}\" git_reference=${GIT_CHECKOUT_COMMIT_BRANCH_TAG} \
     azk_domain=${AZK_DOMAIN} azk_agent_start_command=\"${AZK_AGENT_START_COMMAND}\" azk_host=\"${AZK_HOST:-$AZK_HOST_IP}\" \
     azk_restart_command=\"${AZK_RESTART_COMMAND}\" src_dir=\"${REMOTE_PROJECT_PATH}\" git_dir=\"${REMOTE_GIT_PATH}\"
+    remote_root_user=\"${REMOTE_ROOT_USER}\" projects_path=\"${PROJECTS_PATH}\" azk_agent_log_file=\"${AZK_AGENT_LOG_FILE}\""
 fi
 
 if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then

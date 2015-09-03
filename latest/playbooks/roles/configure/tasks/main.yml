@@ -5,13 +5,22 @@
     groups=docker
     append=yes
 
-- name: Ensure .ssh dir exists
+- name: Ensure /etc/resolver path exists
   file:
-    path=/home/{{ user }}/.ssh
+    path=/etc/resolver
+    state=directory
+
+- name: Ensure required directories exists
+  file:
+    path={{ item }}
     state=directory
     owner={{ user }}
     group={{ user }}
     mode=0775
+  with_items:
+  - "{{ git_dir }}"
+  - "{{ src_dir }}"
+  - "/home/{{ user }}/.ssh"
 
 - name: Ensure authorized_keys exists
   copy:
@@ -19,22 +28,6 @@
     dest=/home/{{ user }}/.ssh/authorized_keys
     owner={{ user }}
     mode=0600
-
-- name: Ensure repository directories exists
-  file:
-    path={{ git_dir }}
-    state=directory
-    owner={{ user }}
-    group={{ user }}
-    mode=0775
-
-- name: Create git work tree
-  file:
-    path={{ src_dir }}
-    state=directory
-    owner={{ user }}
-    group={{ user }}
-    mode=0775
 
 - name: Create git repository
   command:
@@ -47,23 +40,26 @@
     chdir={{ git_dir }}
     chown {{ user }}.{{ user }} -R .
 
-- name: Ensure post-receive hooks exists
+- name: Apply templates
   template:
-    src=post-receive.j2
-    dest={{ git_dir }}/hooks/post-receive
-    owner={{ user }}
-    mode=0755
+    src={{ item.src }}
+    dest={{ item.dest }}
+    owner={{ item.owner }}
+    mode={{ item.mode }}
+  with_items:
+  - { src: "post-receive.j2", dest: "{{ git_dir }}/hooks/post-receive", owner: "{{ user }}", mode: "0755" }
+  - { src: "Upstart.conf.j2", dest: "/etc/dbus-1/system.d/Upstart.conf", owner: "{{ remote_root_user }}", mode: "0644" }
+  - { src: "azk-agent.conf.j2", dest: "/etc/init/azk-agent.conf", owner: "{{ remote_root_user }}", mode: "0644" }
+  - { src: "azk-all.conf.j2", dest: "/etc/init/azk-all.conf", owner: "{{ remote_root_user }}", mode: "0644" }
+  - { src: "azk.conf.j2", dest: "/etc/init/azk.conf", owner: "{{ remote_root_user }}", mode: "0644" }
+  - { src: "resolver.j2", dest: "/etc/resolver/{{ azk_domain }}", owner: "{{ remote_root_user }}", mode: "0644" }
 
-- name: Ensure /etc/resolver path exists
-  file:
-    path=/etc/resolver
-    state=directory
-
-- name: Create /etc/resolver file
-  template:
-    src=resolver.j2
-    dest=/etc/resolver/{{ azk_domain }}
+- name: Restart dbus
+  command:
+    service dbus restart
 
 - name: Set iptables to forward traffic to load balancer
-  command:
-    iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ docker_ip }}:{{ azk_balancer_port }}
+  shell: "{{ item }}"
+  with_items:
+  - "iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ docker_ip }}:{{ azk_balancer_port }}"
+  - "iptables-save > /etc/iptables/rules.v4"

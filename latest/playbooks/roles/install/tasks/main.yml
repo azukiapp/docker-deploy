@@ -8,8 +8,9 @@
 - name: Add azk repo
   apt_repository: repo="{{ azk_repo }}" state=present
 
-- name: Ensure azk is installed
-  apt: pkg=azk state=present update_cache=true
-
-- name: Ensure git is installed
-  apt: pkg=git state=present update_cache=true
+- name: Install packages
+  apt: pkg={{ item }} state=present update_cache=true
+  with_items:
+  - azk
+  - git
+  - iptables-persistent

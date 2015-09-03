@@ -5,12 +5,16 @@
 echo "$> git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} -f"
 git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} -f
 
-cd {{ src_dir }}
+tail -n0 -F {{ azk_agent_log_file }} 2> /dev/null &
+TAIL_PID="$!"
 
-echo "$> ${AZK_AGENT_START_COMMAND}"
-${AZK_AGENT_START_COMMAND}
+UPSTART_AZK_AGENT_JOB="azk-agent"
+initctl start ${UPSTART_AZK_AGENT_JOB} > /dev/null 2>&1
+kill ${TAIL_PID} > /dev/null 2>&1
 
 echo ""; echo "Starting azk. Maybe downloading images be needed. Please be patient."
-
 echo "$> ${AZK_RESTART_COMMAND}"
-sh -c "${AZK_RESTART_COMMAND}"
+(
+  cd {{ src_dir }}
+  sh -c "${AZK_RESTART_COMMAND}"
+)

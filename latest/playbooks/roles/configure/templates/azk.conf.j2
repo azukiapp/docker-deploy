@@ -1,0 +1,16 @@
+description "azk instance"
+
+task
+instance $MANIFEST_FILE
+
+pre-start script
+  ! [ -f ${MANIFEST_FILE} ] && exit 1
+  initctl start azk-agent || true
+end script
+
+script
+  ENV_FILE='/home/{{ user }}/.env'
+  [ -f $ENV_FILE ] && . $ENV_FILE
+  cd $( dirname ${MANIFEST_FILE} )
+  exec su {{ user }} -c "{{ azk_restart_command }}"
+end script

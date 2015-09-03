@@ -1,0 +1,17 @@
+description "all azk instances"
+
+start on started azk-agent
+task
+
+script
+  PROJECTS_PATH='{{ projects_path }}'
+  PROJECTS_PATH=${PROJECTS_PATH:-/}
+
+  ! [ -d ${PROJECTS_PATH} ] && exit 1
+  initctl start azk-agent || true
+
+  MANIFEST_FILE_NAME='Azkfile.js'
+  for MANIFEST_FILE in $( sh -c "find ${PROJECTS_PATH} -name ${MANIFEST_FILE_NAME} -type f -not -path '*/\.*' -not -path '/usr/lib/azk/*'" ); do
+    initctl start -n azk MANIFEST_FILE=$( readlink -f ${MANIFEST_FILE} )
+  done
+end script
