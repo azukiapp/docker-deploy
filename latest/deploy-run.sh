@@ -8,6 +8,8 @@ cat ${LOCAL_ROOT_DOT_SSH_PATH}/*.pub >> playbooks/roles/configure/files/authoriz
 export ANSIBLE_HOST_KEY_CHECKING=False
 
 analytics_track() {
+  [ "${DISABLE_ANALYTICS_TRACKER}" = "true" ] && return
+
   PROJECT_ID="55f3c582672e6c30ab510f67"
   WRITE_KEY="3901d75fa570c3cd6b94762af86c5d371c0f29bd9bb292a475edb87d1a4a1b44d06ab2c63ee70dadd9a13201807398650bbf11d2da38b01f521048615c08868522b90ed6d648f50181c81307014adea91b88f4a3e1aca570d593a242fb758c5ef6fa21046fa7dc2e166d6b6b77d210a6"
 
