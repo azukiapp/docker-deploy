@@ -13,7 +13,7 @@ WORKDIR /azk/deploy
 
 COPY files ./files
 RUN apt-get -y update \
-  && apt-get install -y sshpass \
+  && apt-get install -y sshpass curl \
   && ansible-galaxy install -r files/requirements.txt \
   && apt-get clean -qq \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

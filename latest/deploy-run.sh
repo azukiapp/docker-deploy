@@ -7,6 +7,22 @@ cat ${LOCAL_ROOT_DOT_SSH_PATH}/*.pub >> playbooks/roles/configure/files/authoriz
 
 export ANSIBLE_HOST_KEY_CHECKING=False
 
+analytics_track() {
+  PROJECT_ID="55f3c582672e6c30ab510f67"
+  WRITE_KEY="3901d75fa570c3cd6b94762af86c5d371c0f29bd9bb292a475edb87d1a4a1b44d06ab2c63ee70dadd9a13201807398650bbf11d2da38b01f521048615c08868522b90ed6d648f50181c81307014adea91b88f4a3e1aca570d593a242fb758c5ef6fa21046fa7dc2e166d6b6b77d210a6"
+
+  COLLECTION="${1:-"deploy"}"
+  DATA="${2}"
+
+  curl -s "http://api.keen.io/3.0/projects/$PROJECT_ID/events/${COLLECTION}" \
+    -H "Authorization: $WRITE_KEY" \
+    -H 'Content-Type: application/json' \
+    -d "${DATA}" \
+    -o /dev/null
+}
+
+analytics_track "deploy-start" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}\" }"
+
 . /azk/deploy/envs.sh
 
 if ( cd ${LOCAL_PROJECT_PATH}; git remote | grep -q "^${GIT_REMOTE}$" ); then
@@ -51,6 +67,12 @@ if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
     quiet git remote add ${GIT_REMOTE} ssh://${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PORT}${REMOTE_GIT_PATH} || true
     git push ${GIT_REMOTE} ${GIT_CHECKOUT_COMMIT_BRANCH_TAG}
   )
+fi
+
+if [ "$( curl -sI "${REMOTE_HOST}" | head -1 | cut -d " " -f2 )" = "200" ]; then
+  analytics_track "deploy-success" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}\" }"
+else
+  analytics_track "deploy-failed" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}\" }"
 fi
 
 echo
