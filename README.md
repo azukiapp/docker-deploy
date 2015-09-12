@@ -34,6 +34,7 @@ The following environment variables are available for configuring the deployment
 - **REMOTE_ROOT_USER** (*optional, default: root*): Root user in the remote server;
 - **REMOTE_PORT** (*optional, default: 22*): SSH remote port;
 - **AZK_DOMAIN** (*optional, default: azk.dev.io*): azk domain in the current namespace;
+- **HOST_DOMAIN** (*optional*): Domain name which you'll use to access the remote server;
 - **AZK_RESTART_COMMAND** (*optional, default: azk restart*): command to executed after each git push;
 - **REMOTE_PROJECT_PATH_ID** (*optional*): By default, the project will be placed at */home/`REMOTE_USER`/`REMOTE_PROJECT_PATH_ID`* (i.e., `REMOTE_PROJECT_PATH`) in the remote server. If no value is given, a random id will be generated;
 - **REMOTE_PROJECT_PATH** (*optional*): The path where the project will be stored in the remote server. If no value is given, it will be */home/`REMOTE_USER`/`REMOTE_PROJECT_PATH_ID`*;
@@ -75,7 +76,9 @@ systems({
   },
 });
 ```
-- Add the `AZK_HOST` var to your main system http domains (so you can access it by http://`SERVER_PUBLIC_IP`)
+
+- Add the `HOST_DOMAIN` (if any) and `HOST_IP` var to your main system http domains (so you can access it by http://`SERVER_PUBLIC_IP` or http://`YOUR_CUSTOM_DOMAIN`). Please note the order matter.
+
 ```js
 /**
  * Documentation: http://docs.azk.io/Azkfile.js
@@ -88,7 +91,8 @@ systems({
     http: {
       domains: [
         // ...
-        "#{process.env.AZK_HOST}"
+        "#{process.env.HOST_DOMAIN}",
+        "#{process.env.HOST_IP}"
       ]
     },
   },

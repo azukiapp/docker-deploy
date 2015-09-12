@@ -37,9 +37,10 @@ if [ -z ${RUN_CONFIGURE} ] || [ "${RUN_CONFIGURE}" = "true" ]; then
   ansible-playbook playbooks/configure.yml --extra-vars "\
     user=${REMOTE_USER} env_file=${ENV_FILE} local_project_path=\"${LOCAL_PROJECT_PATH}\" \
     remote_project_path=\"${REMOTE_PROJECT_PATH}\" git_reference=${GIT_CHECKOUT_COMMIT_BRANCH_TAG} \
-    azk_domain=${AZK_DOMAIN} azk_agent_start_command=\"${AZK_AGENT_START_COMMAND}\" azk_host=\"${AZK_HOST:-$AZK_HOST_IP}\" \
+    azk_domain=${AZK_DOMAIN} azk_agent_start_command=\"${AZK_AGENT_START_COMMAND}\" \
     azk_restart_command=\"${AZK_RESTART_COMMAND}\" src_dir=\"${REMOTE_PROJECT_PATH}\" git_dir=\"${REMOTE_GIT_PATH}\"
-    remote_root_user=\"${REMOTE_ROOT_USER}\" projects_path=\"${PROJECTS_PATH}\" azk_agent_log_file=\"${AZK_AGENT_LOG_FILE}\""
+    remote_root_user=\"${REMOTE_ROOT_USER}\" projects_path=\"${PROJECTS_PATH}\" azk_agent_log_file=\"${AZK_AGENT_LOG_FILE}\" \
+    host_domain=\"${HOST_DOMAIN}\""
 fi
 
 if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
@@ -53,6 +54,10 @@ if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
 fi
 
 echo
-echo "App successfully deployed at ${AZK_HOST:-"http://$REMOTE_HOST"}"
+if [ -z "${HOST_DOMAIN}" ]; then
+  echo "App successfully deployed at http://${REMOTE_HOST}"
+else
+  echo "App successfully deployed at http://${HOST_DOMAIN} (${REMOTE_HOST})"
+fi
 
 set +e
