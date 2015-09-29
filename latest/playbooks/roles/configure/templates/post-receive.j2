@@ -2,8 +2,33 @@
 # post-receive hook
 . /home/{{ user }}/.env
 
+quiet() {
+  "${@}" >/dev/null 2>&1
+}
+
+VERSION_PREFIX='v'
+
+config_git() {
+  if ! git config --get --global user.name || ! git config --get --global user.email; then
+    git config --global user.name "azk Deploy Bot"
+    git config --global user.email "no-reply@azukiapp.com"
+  fi
+}
+
+bump_version() {
+  PREVIOUS_VERSION=$( git tag | grep -P "^${VERSION_PREFIX}\d+$" | tail -1 | sed s/^v// )
+  LATEST_VERSION="${VERSION_PREFIX}$(( PREVIOUS_VERSION + 1 ))"
+  git tag -a $LATEST_VERSION -m "$( git log --format=%B -n 1 ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} )"
+}
+
 echo "$> git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} -f"
 git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} -f
+
+# If it's not a rollback, bump a new version
+if ! quiet git describe --tags ${GIT_CHECKOUT_COMMIT_BRANCH_TAG}; then
+  config_git
+  bump_version
+fi
 
 tail -n0 -F {{ azk_agent_log_file }} 2> /dev/null &
 TAIL_PID="$!"
@@ -17,4 +42,12 @@ echo "$> ${AZK_RESTART_COMMAND}"
 (
   cd {{ src_dir }}
   sh -c "${AZK_RESTART_COMMAND}"
+  RESULT=$?
 )
+
+echo ""
+if [ $RESULT -eq 0 ]; then
+  echo "Version ${LATEST_VERSION} has been successfully deployed."
+else
+  echo "Version ${LATEST_VERSION} has failed."
+fi
