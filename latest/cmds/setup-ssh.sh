@@ -1,10 +1,3 @@
-[ -z ${LOCAL_PROJECT_PATH} ] && LOCAL_PROJECT_PATH="/azk/deploy/src"
-
-if [ ! -d ${LOCAL_PROJECT_PATH} ]; then
-  echo "Failed to locate source dir ${LOCAL_PROJECT_PATH}"
-  exit 1
-fi
-
 quiet() {
   ( $@ ) > /dev/null 2>&1
 }

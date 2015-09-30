@@ -33,6 +33,7 @@ The following environment variables are available for configuring the deployment
 - **REMOTE_PASS** (*optional*): `REMOTE_USER`'s password. If it's a new user, a random password will be generated;
 - **REMOTE_ROOT_USER** (*optional, default: root*): Root user in the remote server;
 - **REMOTE_PORT** (*optional, default: 22*): SSH remote port;
+- **GIT_REF** (*optional, default: master*): Git reference (branch, commit SHA1 or tag) to be deployed;
 - **AZK_DOMAIN** (*optional, default: azk.dev.io*): azk domain in the current namespace;
 - **HOST_DOMAIN** (*optional*): Domain name which you'll use to access the remote server;
 - **AZK_RESTART_COMMAND** (*optional, default: azk restart*): command to executed after each git push;

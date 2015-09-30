@@ -6,43 +6,23 @@ VERSION_PREFIX='v'
 
 config_git() {
   if ! git config --get --global user.name || ! git config --get --global user.email; then
-    git config --global user.name "azk Deploy Bot"
-    git config --global user.email "no-reply@azukiapp.com"
+    (
+      git config --global user.name "azk Deploy Bot"
+      git config --global user.email "no-reply@azukiapp.com"
+    ) > /dev/null 2>&1
   fi
 }
 
 bump_version() {
   PREVIOUS_VERSION=$( git tag | grep -P "^${VERSION_PREFIX}\d+$" | tail -1 | sed s/^v// )
   LATEST_VERSION="${VERSION_PREFIX}$(( PREVIOUS_VERSION + 1 ))"
-  git tag -a $LATEST_VERSION -m "$( git log --format=%s -n 1 ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} )"
+  git tag -a $LATEST_VERSION -m "$( git log --format=%s -n 1 ${GIT_REF} )"
 }
 
-echo "$> git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} -f"
-git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} -f
+$HOME/bin/azk-start
 
 # If it's not a rollback, bump a new version
-if [ ! $( git tag --points-at ${GIT_CHECKOUT_COMMIT_BRANCH_TAG} ) ]; then
+if [ ! $( git tag --points-at ${GIT_REF} ) ]; then
   config_git
   bump_version
-fi
-
-tail -n0 -F {{ azk_agent_log_file }} 2> /dev/null &
-TAIL_PID="$!"
-
-UPSTART_AZK_AGENT_JOB="azk-agent"
-initctl start ${UPSTART_AZK_AGENT_JOB} > /dev/null 2>&1
-kill ${TAIL_PID} > /dev/null 2>&1
-
-echo ""; echo "Starting azk. Maybe downloading images be needed. Please be patient."
-echo "$> ${AZK_RESTART_COMMAND}"
-(
-  cd {{ src_dir }}
-  sh -c "${AZK_RESTART_COMMAND}"
-)
-RESULT=$?
-echo ""
-if [ $RESULT -eq 0 ]; then
-  echo "Version ${LATEST_VERSION} has been successfully deployed."
-else
-  echo "Version ${LATEST_VERSION} has failed."
 fi

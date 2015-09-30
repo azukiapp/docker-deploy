@@ -13,7 +13,7 @@ export AZK_AGENT_START_COMMAND="${AZK_AGENT_START_COMMAND:-"azk agent start"}"
 export AZK_RESTART_COMMAND="${AZK_RESTART_COMMAND:-"azk restart -R"}"
 export AZK_AGENT_LOG_FILE="${AZK_AGENT_LOG_FILE:-"/tmp/azk-agent.log"}"
 
-export GIT_CHECKOUT_COMMIT_BRANCH_TAG="${GIT_CHECKOUT_COMMIT_BRANCH_TAG:-"master"}"
+export GIT_REF="${GIT_REF:-"master"}"
 export GIT_REMOTE="${GIT_REMOTE:-"azk_deploy"}"
 
 export PROJECTS_PATH="${PROJECTS_PATH:-"/home/${REMOTE_USER}"}"

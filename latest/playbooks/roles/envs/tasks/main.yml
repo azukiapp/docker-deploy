@@ -33,4 +33,4 @@
   - { key: "HOST_DOMAIN", value: "{{ host_domain }}" }
   - { key: "AZK_AGENT_START_COMMAND", value: "{{ azk_agent_start_command }}" }
   - { key: "AZK_RESTART_COMMAND", value: "{{ azk_restart_command }}" }
-  - { key: "GIT_CHECKOUT_COMMIT_BRANCH_TAG", value: "{{ git_reference }}" }
+  - { key: "GIT_REF", value: "{{ git_ref }}" }
