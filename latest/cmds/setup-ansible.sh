@@ -13,6 +13,7 @@ check_remote_host() {
 
   if [ ${RETRY} -ge ${MAX_RETRY} ]; then
     echo "Failed to connect to server. Try again later."
+    rm -f ${ROOT_PATH}/.config/REMOTE_HOST
     exit 1
   fi
 }

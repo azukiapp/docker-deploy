@@ -1,6 +1,7 @@
 #! /bin/sh
 
 set -- $*
+set -x
 
 abs_dir() {
   cd "${1%/*}"; link=`readlink ${1##*/}`;
@@ -20,7 +21,7 @@ main() {
     check_project_src
   . ${ROOT_PATH}/cmds/setup-ssh.sh
 
-  if [ "$1" = "--provider" ]; then
+  if [ "$1" = "--provider" ] && [ -z ${REMOTE_HOST} ]; then
     shift; export PROVIDER=$1; shift
     if [ -f ${ROOT_PATH}/deploy-${PROVIDER}.sh ]; then
       . ${ROOT_PATH}/deploy-${PROVIDER}.sh
@@ -29,6 +30,8 @@ main() {
       exit 1
     fi
   fi
+
+  echo "REMOTE_HOST=${REMOTE_HOST}" > ${ROOT_PATH}/.config/REMOTE_HOST
 
   # This is a workaround because of https://github.com/docker/docker/issues/3753
   [ "$1" = "/bin/sh" ] && shift
