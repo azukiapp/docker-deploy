@@ -1,13 +1,3 @@
-quiet() {
-  ( $@ ) > /dev/null 2>&1
-}
-
-load_configs() {
-  for cfg in ${ROOT_PATH}/.config/*; do
-    . $cfg
-  done
-}
-
 setup_ssh_keys() {
   LOCAL_ROOT_DOT_SSH_PATH="/root/.ssh"
   [ -z ${LOCAL_DOT_SSH_PATH} ] && LOCAL_DOT_SSH_PATH="/azk/deploy/.ssh"
@@ -25,7 +15,6 @@ setup_ssh_keys() {
 
 set -e
 
-load_configs
 setup_ssh_keys
 
 set +e

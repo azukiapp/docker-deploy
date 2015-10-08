@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 set -- $*
 set -x
@@ -17,30 +17,40 @@ check_project_src() {
   fi
 }
 
-main() {
-    check_project_src
-  . ${ROOT_PATH}/cmds/setup-ssh.sh
+require() {
+  . ${ROOT_PATH}/$1
+}
 
-  if [ "$1" = "--provider" ] && [ -z ${REMOTE_HOST} ]; then
-    shift; export PROVIDER=$1; shift
-    if [ -f ${ROOT_PATH}/deploy-${PROVIDER}.sh ]; then
-      . ${ROOT_PATH}/deploy-${PROVIDER}.sh
+main() {
+  require utils.sh
+  load_configs
+  check_project_src
+  require cmds/setup-ssh.sh
+  check_cache
+
+  if [ "$1" = "--provider" ]; then
+    shift; export CURRENT_PROVIDER=$1; shift
+    if [ -f ${ROOT_PATH}/deploy-${CURRENT_PROVIDER}.sh ]; then
+      if ! contains "REMOTE_HOST" "${SKIP[@]}" || ! contains "PROVIDER" "${SKIP[@]}" || [ "${PROVIDER}" != "${CURRENT_PROVIDER}" ]; then
+        . ${ROOT_PATH}/deploy-${CURRENT_PROVIDER}.sh
+      fi
     else
-      echo "Invalid provider ${PROVIDER}."
+      echo "Invalid provider ${CURRENT_PROVIDER}."
       exit 1
     fi
   fi
 
-  echo "REMOTE_HOST=${REMOTE_HOST}" > ${ROOT_PATH}/.config/REMOTE_HOST
+  set_config PROVIDER "$CURRENT_PROVIDER" 
+  set_config REMOTE_HOST "$REMOTE_HOST"
 
   # This is a workaround because of https://github.com/docker/docker/issues/3753
   [ "$1" = "/bin/sh" ] && shift
   [ "$1" = "-c" ] && shift
 
-  . ${ROOT_PATH}/cmds/setup-ansible.sh
+  require cmds/setup-ansible.sh
 
   if [ $# -eq 0 ]; then
-    . ${ROOT_PATH}/cmds/run.sh
+    require cmds/run.sh
     return 0
   fi
 
