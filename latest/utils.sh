@@ -1,5 +1,9 @@
 #! /bin/bash
 
+require() {
+  . ${ROOT_PATH}/$1
+}
+
 contains() {
   local seeking=$1; shift
   for el; do

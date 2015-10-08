@@ -3,6 +3,9 @@
 set -- $*
 set -x
 
+# Importing set of utils functions
+. utils.sh
+
 abs_dir() {
   cd "${1%/*}"; link=`readlink ${1##*/}`;
   if [ -z "$link" ]; then pwd; else abs_dir $link; fi
@@ -17,12 +20,7 @@ check_project_src() {
   fi
 }
 
-require() {
-  . ${ROOT_PATH}/$1
-}
-
 main() {
-  require utils.sh
   load_configs
   check_project_src
   require cmds/setup-ssh.sh
