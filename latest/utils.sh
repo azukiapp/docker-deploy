@@ -1,7 +1,11 @@
 #! /bin/bash
 
 require() {
-  . ${ROOT_PATH}/$1
+  if ( echo "$1" | grep "^/" ) > /dev/null 2>&1; then
+    . $1
+  else
+    . ${ROOT_PATH}/$1
+  fi
 }
 
 contains() {
@@ -33,16 +37,14 @@ set_config() {
     return 1
   fi
 
-  echo "$1=\"$2\"" > ${ROOT_PATH}/.config/$1
+  echo "$1=\"$2\"" > ${CONFIG_DIR}/$1
 }
 
 quiet() {
-  ( $@ ) > /dev/null 2>&1
+  "$@" > /dev/null 2>&1
 }
 
 load_configs() {
-  CONFIG_DIR=${ROOT_PATH}/.config
-
   if [ ! -d $CONFIG_DIR ]; then
     mkdir -p $CONFIG_DIR  
   fi
@@ -51,3 +53,5 @@ load_configs() {
     . ${CONFIG_DIR}/${cfg}
   done
 }
+
+export CONFIG_DIR=${ROOT_PATH}/.config

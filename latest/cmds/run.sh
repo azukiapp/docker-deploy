@@ -20,13 +20,13 @@ analytics_track "deploy-start" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}
 
 if [ -z ${RUN_SETUP} ] || [ "${RUN_SETUP}" = "true" ]; then
   # Provisioning
-  ansible-playbook playbooks/setup.yml
-  ansible-playbook playbooks/reset.yml || true
+  ansible-playbook playbooks/setup.yml -vvvv
+  ansible-playbook playbooks/reset.yml -vvvv || true
 fi
 
 if [ -z ${RUN_CONFIGURE} ] || [ "${RUN_CONFIGURE}" = "true" ]; then
   # Configuring
-  ansible-playbook playbooks/configure.yml --extra-vars "\
+  ansible-playbook playbooks/configure.yml -vvvv --extra-vars "\
     user=${REMOTE_USER} env_file=${ENV_FILE} local_project_path=\"${LOCAL_PROJECT_PATH}\" \
     remote_project_path=\"${REMOTE_PROJECT_PATH}\" git_ref=${GIT_REF} \
     azk_domain=${AZK_DOMAIN} azk_agent_start_command=\"${AZK_AGENT_START_COMMAND}\" \
@@ -57,5 +57,6 @@ if [ -z "${HOST_DOMAIN}" ]; then
 else
   echo "App successfully deployed at http://${HOST_DOMAIN} (${REMOTE_HOST})"
 fi
+echo ""
 
 set +e

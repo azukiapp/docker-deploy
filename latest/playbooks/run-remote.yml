@@ -1,0 +1,7 @@
+---
+- hosts: all
+  tasks:
+    - name: Run script in remote server
+      shell: "/home/{{ user }}/bin/{{ script_name }} {{ script_args }} > {{ output_file }} 2>&1"
+      become: yes
+      become_user: "{{ user }}"

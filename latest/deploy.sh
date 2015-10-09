@@ -1,10 +1,6 @@
 #! /bin/bash
 
 set -- $*
-set -x
-
-# Importing set of utils functions
-. utils.sh
 
 abs_dir() {
   cd "${1%/*}"; link=`readlink ${1##*/}`;
@@ -12,7 +8,7 @@ abs_dir() {
 }
 
 check_project_src() {
-  [ -z ${LOCAL_PROJECT_PATH} ] && LOCAL_PROJECT_PATH="/azk/deploy/src"
+  [ -z ${LOCAL_PROJECT_PATH} ] && export LOCAL_PROJECT_PATH="/azk/deploy/src"
 
   if [ ! -d ${LOCAL_PROJECT_PATH} ]; then
     echo "Failed to locate source dir ${LOCAL_PROJECT_PATH}"
@@ -47,14 +43,12 @@ main() {
 
   require cmds/setup-ansible.sh
 
-  if [ $# -eq 0 ]; then
-    require cmds/run.sh
-    return 0
-  fi
-
   case "$1" in
-    rollback)
-      sh ./cmds/${1}.sh "$2"
+    "")
+      require cmds/run.sh
+      ;;
+    rollback|versions|fast|slow|restart)
+      CMD=$1; shift; bash ./cmds/${CMD}.sh "${@}"
       ;;
     *)
       echo "Invalid command ${1}."
@@ -63,4 +57,8 @@ main() {
 
 ROOT_PATH=`abs_dir ${BASH_SOURCE:-$0}`
 cd ${ROOT_PATH}
+
+# Importing set of utils functions
+. ${ROOT_PATH}/utils.sh
+
 main "${@}"

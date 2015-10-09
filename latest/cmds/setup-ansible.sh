@@ -19,8 +19,7 @@ check_remote_host() {
 }
 
 generate_authorized_keys() {
-  echo > playbooks/roles/configure/files/authorized_keys
-  cat ${LOCAL_ROOT_DOT_SSH_PATH}/*.pub >> playbooks/roles/configure/files/authorized_keys
+  cat ${LOCAL_ROOT_DOT_SSH_PATH}/*.pub > playbooks/roles/configure/files/authorized_keys
 }
 
 generate_ansible_config_file() {

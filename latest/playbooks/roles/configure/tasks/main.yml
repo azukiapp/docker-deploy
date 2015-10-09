@@ -49,6 +49,9 @@
     mode={{ item.mode }}
   with_items:
   - { src: "azk-start.j2", dest: "/home/{{ user }}/bin/azk-start", owner: "{{ user }}", mode: "0755" }
+  - { src: "git-checkout.j2", dest: "/home/{{ user }}/bin/git-checkout", owner: "{{ user }}", mode: "0755" }
+  - { src: "rollback.j2", dest: "/home/{{ user }}/bin/rollback", owner: "{{ user }}", mode: "0755" }
+  - { src: "versions.j2", dest: "/home/{{ user }}/bin/versions", owner: "{{ user }}", mode: "0755" }
   - { src: "post-receive.j2", dest: "{{ git_dir }}/hooks/post-receive", owner: "{{ user }}", mode: "0755" }
   - { src: "Upstart.conf.j2", dest: "/etc/dbus-1/system.d/Upstart.conf", owner: "{{ remote_root_user }}", mode: "0644" }
   - { src: "azk-agent.conf.j2", dest: "/etc/init/azk-agent.conf", owner: "{{ remote_root_user }}", mode: "0644" }
