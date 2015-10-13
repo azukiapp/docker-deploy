@@ -17,4 +17,10 @@ set -e
 
 setup_ssh_keys
 
+# Avoid git to check the identity of the remote host
+export GIT_SSH="${ROOT_PATH}/utils/git-deploy.sh"
+
+# Avoid Ansible to buffer and suppress its output
+export PYTHONUNBUFFERED=1
+
 set +e

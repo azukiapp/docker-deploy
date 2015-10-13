@@ -13,7 +13,7 @@ check_remote_host() {
 
   if [ ${RETRY} -ge ${MAX_RETRY} ]; then
     echo "Failed to connect to server. Try again later."
-    rm -f ${ROOT_PATH}/.config/REMOTE_HOST
+    clean_config "REMOTE_HOST"
     exit 1
   fi
 }
@@ -46,7 +46,7 @@ export_envs() {
   export REMOTE_GIT_PATH="${REMOTE_PROJECT_PATH}.git"
 }
 
-. /azk/deploy/envs.sh
+. /azk/deploy/utils/envs.sh
 
 check_remote_host
 generate_authorized_keys

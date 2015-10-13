@@ -1,3 +1,8 @@
+#! /bin/bash
+
+. ${ROOT_PATH}/utils/utils.sh
+load_configs
+
 set -e
 
 analytics_track() {
@@ -20,29 +25,44 @@ analytics_track "deploy-start" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}
 
 if [ -z ${RUN_SETUP} ] || [ "${RUN_SETUP}" = "true" ]; then
   # Provisioning
-  ansible-playbook playbooks/setup.yml -vvvv
-  ansible-playbook playbooks/reset.yml -vvvv || true
+  clean_config "RUN_SETUP"
+
+  ansible-playbook playbooks/setup.yml
+  ansible-playbook playbooks/reset.yml || true
+
+  # Avoid running this step in the next deploy run
+  set_config "RUN_SETUP" "false"
 fi
 
 if [ -z ${RUN_CONFIGURE} ] || [ "${RUN_CONFIGURE}" = "true" ]; then
   # Configuring
-  ansible-playbook playbooks/configure.yml -vvvv --extra-vars "\
+  clean_config "RUN_CONFIGURE"
+
+  ansible-playbook playbooks/configure.yml --extra-vars "\
     user=${REMOTE_USER} env_file=${ENV_FILE} local_project_path=\"${LOCAL_PROJECT_PATH}\" \
     remote_project_path=\"${REMOTE_PROJECT_PATH}\" git_ref=${GIT_REF} \
     azk_domain=${AZK_DOMAIN} azk_agent_start_command=\"${AZK_AGENT_START_COMMAND}\" \
     azk_restart_command=\"${AZK_RESTART_COMMAND}\" src_dir=\"${REMOTE_PROJECT_PATH}\" git_dir=\"${REMOTE_GIT_PATH}\"
     remote_root_user=\"${REMOTE_ROOT_USER}\" projects_path=\"${PROJECTS_PATH}\" azk_agent_log_file=\"${AZK_AGENT_LOG_FILE}\" \
     host_domain=\"${HOST_DOMAIN}\""
+
+  # Avoid running this step in the next deploy run
+  set_config "RUN_CONFIGURE" "false"
 fi
 
 if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
   # Deploying
+  clean_config "RUN_DEPLOY"
+
   (
     cd ${LOCAL_PROJECT_PATH}
     quiet git remote rm ${GIT_REMOTE} || true
     quiet git remote add ${GIT_REMOTE} ssh://${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PORT}${REMOTE_GIT_PATH} || true
     git push ${GIT_REMOTE} ${GIT_REF}
   )
+
+  # Ensure running this step in the next deploy run
+  set_config "RUN_DEPLOY" "true"
 fi
 
 if [ "$( curl -sI "${REMOTE_HOST}" | head -1 | cut -d " " -f2 )" = "200" ]; then

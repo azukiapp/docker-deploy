@@ -15,9 +15,13 @@ fi
 
 get_previous_ref() {
   CURRENT_VERSION=$( git --git-dir={{ git_dir }} tag --points-at HEAD )
+  if [ -z $CURRENT_VERSION ]; then
+    return
+  fi
+
   CURRENT_VERSION_INDEX=$( git --git-dir={{ git_dir }} tag -l 'v*' | sort -V | grep -n $CURRENT_VERSION | cut -d ':' -f1)
 
-  if [ $CURRENT_VERSION_INDEX -le 1 ]; then
+  if [ -z $CURRENT_VERSION_INDEX ] || [ $CURRENT_VERSION_INDEX -le 1 ]; then
     return
   fi
 

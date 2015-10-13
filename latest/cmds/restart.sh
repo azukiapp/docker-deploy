@@ -1,13 +1,7 @@
 #! /bin/bash
 
-abs_dir() {
-  cd "${1%/*}"; link=`readlink ${1##*/}`;
-  if [ -z "$link" ]; then pwd; else abs_dir $link; fi
-}
-
-ROOT_PATH=`abs_dir ${BASH_SOURCE:-$0}`
-
-. ${ROOT_PATH}/../utils.sh
+. ${ROOT_PATH}/utils/utils.sh
+load_configs
 
 help() {
   echo "Usage:"
@@ -21,7 +15,8 @@ if [ ! $# -eq 0 ]; then
 fi
 
 OUTPUT_FILE='/tmp/restart.out'
-ssh -p ${REMOTE_PORT} ${REMOTE_ROOT_USER}@${REMOTE_HOST} \
+ssh -p ${REMOTE_PORT} -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
+  ${REMOTE_ROOT_USER}@${REMOTE_HOST} \
   "su ${REMOTE_USER} -c \"> ${OUTPUT_FILE} && tail -F ${OUTPUT_FILE} 2>/dev/null\"" &
 TAIL_PID=$!
 
