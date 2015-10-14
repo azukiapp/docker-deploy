@@ -14,10 +14,10 @@ set_config() {
     return 1
   fi
 
-  echo "$1=\"$2\"" > ${CONFIG_DIR}/$1
+  echo "export $1=\"$2\"" > ${CONFIG_DIR}/$1
 }
 
-clean_config() {
+clear_config() {
   if [ $# -lt 1 ]; then
     echo "Failed to clean config"
     return 1
@@ -25,6 +25,11 @@ clean_config() {
 
   rm -f ${CONFIG_DIR}/$1
 }
+
+clear_configs() {
+  rm -f ${CONFIG_DIR}/*
+}
+
 
 quiet() {
   "$@" > /dev/null 2>&1

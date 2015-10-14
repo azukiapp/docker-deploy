@@ -25,7 +25,7 @@ analytics_track "deploy-start" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}
 
 if [ -z ${RUN_SETUP} ] || [ "${RUN_SETUP}" = "true" ]; then
   # Provisioning
-  clean_config "RUN_SETUP"
+  clear_config "RUN_SETUP"
 
   ansible-playbook playbooks/setup.yml
   ansible-playbook playbooks/reset.yml || true
@@ -36,7 +36,7 @@ fi
 
 if [ -z ${RUN_CONFIGURE} ] || [ "${RUN_CONFIGURE}" = "true" ]; then
   # Configuring
-  clean_config "RUN_CONFIGURE"
+  clear_config "RUN_CONFIGURE"
 
   ansible-playbook playbooks/configure.yml --extra-vars "\
     user=${REMOTE_USER} env_file=${ENV_FILE} local_project_path=\"${LOCAL_PROJECT_PATH}\" \
@@ -52,7 +52,7 @@ fi
 
 if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
   # Deploying
-  clean_config "RUN_DEPLOY"
+  clear_config "RUN_DEPLOY"
 
   (
     cd ${LOCAL_PROJECT_PATH}

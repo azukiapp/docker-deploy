@@ -1,20 +1,25 @@
 set -e
 
 check_remote_host() {
-  [ -z ${REMOTE_HOST} ] && echo "REMOTE_HOST is missing." && exit 1
-
-  RETRY=0; MAX_RETRY=10
-  until [ ${RETRY} -ge ${MAX_RETRY} ]; do
-    quiet nc -w 10 ${REMOTE_HOST} 22 && break
-    RETRY=`expr ${RETRY} + 1`
-    echo "Server is not accepting SSH connections yet. Retrying... (${RETRY}/${MAX_RETRY})"
-    sleep 5
-  done
-
-  if [ ${RETRY} -ge ${MAX_RETRY} ]; then
-    echo "Failed to connect to server. Try again later."
-    clean_config "REMOTE_HOST"
+  if [ -z ${REMOTE_HOST} ]; then
+    echo "REMOTE_HOST is missing."
     exit 1
+  fi
+
+  if [ "${CHECK_SSH}" = "true" ]; then
+    RETRY=0; MAX_RETRY=3
+    until [ ${RETRY} -ge ${MAX_RETRY} ]; do
+      quiet nc -w 10 ${REMOTE_HOST} ${REMOTE_PORT} && break
+      RETRY=`expr ${RETRY} + 1`
+      echo "Server is not accepting SSH connections yet. Retrying... (${RETRY}/${MAX_RETRY})"
+      sleep 5
+    done
+
+    if [ ${RETRY} -ge ${MAX_RETRY} ]; then
+      echo "Failed to connect to server. Try again later."
+      clear_config "REMOTE_HOST"
+      exit 1
+    fi
   fi
 }
 

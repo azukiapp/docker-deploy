@@ -2,6 +2,7 @@
 - name: Create user and add him to docker group
   user:
     name={{ user }}
+    shell=/bin/bash
     groups=docker
     append=yes
 

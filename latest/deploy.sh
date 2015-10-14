@@ -1,7 +1,6 @@
 #! /bin/bash
 
 set -- $*
-set -x
 
 usage() {
   echo "Usage:"
@@ -16,6 +15,7 @@ usage() {
   echo "                    If no reference is specified, rolls back to the previous version;"
   echo "  - ssh:            Create a SSH connection to remote server;"
   echo "  - shell:          Start a shell inside the deploy system;"
+  echo "  - clear-cache:    Clear deploy cached configuration;"
   echo "  - help:           Print this message."
 }
 
@@ -36,10 +36,27 @@ check_project_src() {
 setup_remote() {
   if [ ! -z $RUN_PROVIDER ]; then
     require ${ROOT_PATH}/deploy-${CURRENT_PROVIDER}.sh
+
+    # If we interact with provider, be sure the result machine is ready to receive the app
+    export CHECK_SSH='true'
+    export RUN_SETUP='true'
+    export RUN_CONFIGURE='true'
+    export RUN_DEPLOY='true'
   fi
   set_config PROVIDER "$CURRENT_PROVIDER"
   set_config REMOTE_HOST "$REMOTE_HOST"
   require utils/setup-ansible.sh
+}
+
+pre_command() {
+  CMD=$1
+  set_config CHECK_SSH 'true'
+  setup_remote
+}
+
+post_command() {
+  CMD=$1
+  clear_config CHECK_SSH
 }
 
 main() {
@@ -64,9 +81,11 @@ main() {
   [ "$1" = "-c" ] && shift
 
   case "$1" in
-    ""|rollback|versions|fast|slow|restart|ssh)
-      setup_remote
-      CMD=${1:-"run"}; shift; bash ./cmds/${CMD}.sh "${@}"
+    ""|rollback|versions|fast|slow|restart|ssh|clear-cache)
+      CMD=${1:-"run"}; shift;
+      pre_command "$CMD" && \
+      bash ./cmds/${CMD}.sh "${@}" && \
+      post_command "$CMD"
       ;;
     shell)
       shift; exec bash "${@}"

@@ -1,4 +1,4 @@
 #! /bin/bash
 
-ssh -p ${REMOTE_PORT} -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
-  ${REMOTE_ROOT_USER}@${REMOTE_HOST} "${@}"
+ssh -p ${REMOTE_PORT} -q -o ConnectTimeout=20 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
+  ${REMOTE_USER}@${REMOTE_HOST} "${@}"
