@@ -50,5 +50,5 @@ load_configs() {
   done
 }
 
-export CONFIG_DIR="${ROOT_PATH}/.config"
-export ENV_DIR="${CONFIG_DIR}/env"
+export LOCAL_DOT_CONFIG_PATH=${LOCAL_DOT_CONFIG_PATH:-${ROOT_PATH}/.config}
+export ENV_DIR="${LOCAL_DOT_CONFIG_PATH}/env"
