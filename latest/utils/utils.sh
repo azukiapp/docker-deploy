@@ -14,7 +14,7 @@ set_config() {
     return 1
   fi
 
-  echo "export $1=\"$2\"" > ${CONFIG_DIR}/$1
+  echo "export $1=\"$2\"" > ${ENV_DIR}/$1
 }
 
 clear_config() {
@@ -23,11 +23,11 @@ clear_config() {
     return 1
   fi
 
-  rm -f ${CONFIG_DIR}/$1
+  rm -f ${ENV_DIR}/$1
 }
 
 clear_configs() {
-  rm -f ${CONFIG_DIR}/*
+  rm -f ${ENV_DIR}/*
 }
 
 
@@ -36,18 +36,19 @@ quiet() {
 }
 
 load_configs() {
-  if [ ! -d $CONFIG_DIR ]; then
-    mkdir -p $CONFIG_DIR  
+  if [ ! -d ${ENV_DIR} ]; then
+    mkdir -p ${ENV_DIR}
   fi
 
-  for cfg in $( ls ${CONFIG_DIR}/ ); do
+  for cfg in $( ls ${ENV_DIR}/ ); do
     # Values in Azkfile.js or .env precedes cache
     if [ -z $( eval echo \${$cfg} ) ]; then
-      . ${CONFIG_DIR}/${cfg}
+      . ${ENV_DIR}/${cfg}
     else
       set_config ${cfg} $(eval echo \${$cfg})
     fi
   done
 }
 
-export CONFIG_DIR=${ROOT_PATH}/.config
+export CONFIG_DIR="${ROOT_PATH}/.config"
+export ENV_DIR="${CONFIG_DIR}/env"
