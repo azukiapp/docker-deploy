@@ -5,7 +5,7 @@ load_configs
 
 help() {
   echo "Usage:"
-  echo "  $ deploy fast"
+  echo "  $ deploy full"
   echo ""
 }
 

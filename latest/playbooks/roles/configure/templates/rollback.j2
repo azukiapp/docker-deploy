@@ -3,7 +3,7 @@
 set -e
 
 if [ ! -f $HOME/bin/git-checkout ] || [ ! -f $HOME/bin/azk-start ]; then
-  echo 'Missing required scripts. Run `azk deploy slow` to fix it.'
+  echo 'Missing required scripts. Run `azk deploy full` to fix it.'
   exit 1
 fi
 

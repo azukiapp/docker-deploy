@@ -4,17 +4,17 @@ set -- $*
 
 usage() {
   echo "Usage:"
-  echo "  $ azk shell deploy [ -- command [args] ]"
+  echo "  $ deploy.sh [command [args]]"
   echo ""
   echo "Commands:"
-  echo "  - slow:           Configure the remote server and deploy the app (default for the first run);"
+  echo "  - full:           Configure the remote server and deploy the app (default for the first run);"
   echo "  - fast:           Deploy without configuring the remote server (default for every run after the first one);"
   echo "  - restart:        Restart the app on the remote server;"
   echo "  - versions:       List all app versions deployed on the remote server;"
   echo "  - rollback [ref]: Revert the app to a specified reference (version or git reference -- commit, branch etc.)"
   echo "                    If no reference is specified, rolls back to the previous version;"
   echo "  - ssh:            Create a SSH connection to remote server;"
-  echo "  - shell:          Start a shell inside the deploy system;"
+  echo "  - shell:          Start a shell from inside the deploy system container;"
   echo "  - clear-cache:    Clear deploy cached configuration;"
   echo "  - help:           Print this message."
 }
@@ -81,7 +81,7 @@ main() {
   [ "$1" = "-c" ] && shift
 
   case "$1" in
-    ""|rollback|versions|fast|slow|restart|ssh|clear-cache)
+    ""|rollback|versions|fast|full|restart|ssh|clear-cache)
       CMD=${1:-"run"}; shift;
       pre_command "$CMD" && \
       bash ./cmds/${CMD}.sh "${@}" && \
