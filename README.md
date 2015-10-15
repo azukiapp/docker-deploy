@@ -37,7 +37,7 @@ The following environment variables are available for configuring the deployment
 - **GIT_REF** (*optional, default: master*): Git reference (branch, commit SHA1 or tag) to be deployed;
 - **AZK_DOMAIN** (*optional, default: azk.dev.io*): azk domain in the current namespace;
 - **HOST_DOMAIN** (*optional*): Domain name which you'll use to access the remote server;
-- **AZK_RESTART_COMMAND** (*optional, default: azk restart*): command to executed after each git push;
+- **AZK_RESTART_COMMAND** (*optional, default: azk restart -R*): command to executed after each git push;
 - **REMOTE_PROJECT_PATH_ID** (*optional*): By default, the project will be placed at */home/`REMOTE_USER`/`REMOTE_PROJECT_PATH_ID`* (i.e., `REMOTE_PROJECT_PATH`) in the remote server. If no value is given, a random id will be generated;
 - **REMOTE_PROJECT_PATH** (*optional*): The path where the project will be stored in the remote server. If no value is given, it will be */home/`REMOTE_USER`/`REMOTE_PROJECT_PATH_ID`*;
 - **RUN_SETUP** (*optional, default: true*): Boolean variable that defines if the remote server setup step should be run;
@@ -107,12 +107,12 @@ systems({
 
 - Run:
 ```bash
-$ azk shell deploy
+$ azk deploy
 ```
 
 - Customizing `AZK_RESTART_COMMAND` for a specific deploy:
 ```bash
-$ azk shell deploy -e AZK_RESTART_COMMAND="azk restart -R -vvvv --rebuild"
+$ azk deploy -e AZK_RESTART_COMMAND="azk restart -R -vvvv --rebuild"
 ```
 
 #### Usage with `docker`
