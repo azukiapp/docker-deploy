@@ -29,6 +29,7 @@ The following environment variables are available for configuring the deployment
 - **REMOTE_ROOT_PASS** (*optional*): Deploy server's root password. It's optional because you can have added your public ssh key into the authorized_keys files in the remote server;
 - **LOCAL_PROJECT_PATH**: (*optional, default: `/azk/deploy/src`*) Project source code path;
 - **LOCAL_DOT_SSH_PATH** (*optional, default: `/azk/deploy/.ssh`*): Path containing SSH keys. If no path is given, a new SSH public/private key pair will be generated;
+- **LOCAL_DOT_CONFIG_PATH** (*optional, default: `/azk/deploy/.config`*): Path to be mapped as a persistent folder on Azkfile.js. Used to cache deploy information;
 - **REMOTE_USER** (*optional, default: git*): Username created (or used if it exists) in the remote server to deploy files and run the app;
 - **REMOTE_PASS** (*optional*): `REMOTE_USER`'s password. If it's a new user, a random password will be generated;
 - **REMOTE_ROOT_USER** (*optional, default: root*): Root user in the remote server;
@@ -43,7 +44,7 @@ The following environment variables are available for configuring the deployment
 - **RUN_CONFIGURE** (*optional, default: true*): Boolean variable that defines if the remote server configuration should be run;
 - **RUN_DEPLOY** (*optional, default: true*): Boolean variable that defines if the deploy step should be run;
 - **DISABLE_ANALYTICS_TRACKER** (*optional, default: false*): Boolean variable that defines either azk should track deploy anonymous data or not;
-- **ENV_FILE** (*optional, default: `.env`*): The `.env file` path that will be copied to remote server.;
+- **ENV_FILE** (*optional, default: `.env`*): The `.env file` path that will be copied to remote server.
 
 ### Usage
 
@@ -67,8 +68,9 @@ systems({
   deploy: {
     image: {"docker": "azukiapp/deploy"},
     mounts: {
-      "/azk/deploy/src":  path("."),
-      "/azk/deploy/.ssh": path("#{env.HOME}/.ssh")
+      "/azk/deploy/src":     path("."),
+      "/azk/deploy/.ssh":    path("#{env.HOME}/.ssh"),
+      "/azk/deploy/.config": persistent("deploy-config"),
     },
     scalable: {"default": 0, "limit": 0},
     envs: {
