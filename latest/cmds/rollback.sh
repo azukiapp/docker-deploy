@@ -3,7 +3,7 @@
 . ${ROOT_PATH}/utils/utils.sh
 load_configs
 
-help() {
+usage() {
   echo "Usage:"
   echo "  $ deploy rollback [ git-ref | --help ]"
   echo ""
@@ -17,7 +17,7 @@ help() {
 }
 
 if [ $# -gt 1 ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
-  help
+  usage
   exit 1
 fi
 

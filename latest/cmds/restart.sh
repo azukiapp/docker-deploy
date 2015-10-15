@@ -3,14 +3,14 @@
 . ${ROOT_PATH}/utils/utils.sh
 load_configs
 
-help() {
+usage() {
   echo "Usage:"
   echo "  $ deploy restart"
   echo ""
 }
 
 if [ ! $# -eq 0 ]; then
-  help
+  usage
   exit 1
 fi
 

@@ -3,14 +3,14 @@
 . ${ROOT_PATH}/utils/utils.sh
 load_configs
 
-help() {
+usage() {
   echo "Usage:"
   echo "  $ deploy full"
   echo ""
 }
 
 if [ $# -ge 1 ]; then
-  help
+  usage
   exit 1
 fi
 
