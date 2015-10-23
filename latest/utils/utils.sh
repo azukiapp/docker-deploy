@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 require() {
   if ( echo "$1" | grep "^/" ) > /dev/null 2>&1; then

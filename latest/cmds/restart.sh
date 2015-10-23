@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 . ${ROOT_PATH}/utils/utils.sh
 load_configs
