@@ -25,3 +25,4 @@ COPY utils ./utils
 COPY *.sh ./
 
 ENTRYPOINT ["/azk/deploy/deploy.sh"]
+CMD ["/azk/deploy/deploy.sh"]

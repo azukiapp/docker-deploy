@@ -1,22 +1,20 @@
 #! /bin/bash
 
-set -- $*
-
 usage() {
   echo "Usage:"
   echo "  $ deploy.sh [command [args]]"
   echo ""
   echo "Commands:"
-  echo "  full              Configure the remote server and deploy the app (default for the first run);"
-  echo "  fast              Deploy without configuring the remote server (default for every run after the first one);"
-  echo "  restart           Restart the app on the remote server;"
-  echo "  versions          List all app versions deployed on the remote server;"
-  echo "  rollback [ref]    Revert the app to a specified reference (version or git reference -- commit, branch etc.)"
-  echo "                    If no reference is specified, rolls back to the previous version;"
-  echo "  ssh               Create a SSH connection to remote server;"
-  echo "  shell             Start a shell from inside the deploy system container;"
-  echo "  clear-cache       Clear deploy cached configuration;"
-  echo "  help              Print this message."
+  echo "  full              Configures the remote server and deploy the app (default for the first deployment)"
+  echo "  fast              Deploys without configuring the remote server (default for every run after the first deployment)"
+  echo "  restart           Restarts the app on the remote server"
+  echo "  versions          Lists all versions of the app deployed on the remote server"
+  echo "  rollback [ref]    Reverts the app to a specified reference (version or git reference -- commit, branch etc.)"
+  echo "                    If no reference is specified, rolls back to the previous version"
+  echo "  ssh               Connects to the remote server via SSH protocol"
+  echo "  shell             Start a shell from inside the deploy system container"
+  echo "  clear-cache       Clears deploy cached configuration"
+  echo "  help              Print this message"
 }
 
 abs_dir() {
@@ -28,7 +26,10 @@ check_project_src() {
   [ -z ${LOCAL_PROJECT_PATH} ] && export LOCAL_PROJECT_PATH="/azk/deploy/src"
 
   if [ ! -d ${LOCAL_PROJECT_PATH} ]; then
-    echo "Failed to locate source dir ${LOCAL_PROJECT_PATH}"
+    echo 'Failed to locate project source at ${LOCAL_PROJECT_PATH}'
+    echo
+    echo 'Check the `mounts` session of the deploy system in your Azkfile.js.'
+    echo 'For further info, please read the docs: http://docs.azk.io/en/deploy/'
     exit 1
   fi
 }
@@ -72,6 +73,8 @@ main() {
       fi
     else
       echo "Invalid provider ${CURRENT_PROVIDER}."
+      echo "Check if you have the file ${ROOT_PATH}/deploy-${CURRENT_PROVIDER}.sh available in this image, by running:"
+      echo "  $ azk deploy shell -c 'ls ${ROOT_PATH}/deploy-${CURRENT_PROVIDER}.sh'"
       exit 1
     fi
   fi
@@ -79,13 +82,18 @@ main() {
   # This is a workaround because of https://github.com/docker/docker/issues/3753
   [ "$1" = "/bin/sh" ] && shift
   [ "$1" = "-c" ] && shift
+  [ "$1" = "${MY_PATH}" ] && shift
 
   case "$1" in
-    ""|rollback|versions|fast|full|restart|ssh|clear-cache)
-      CMD=${1:-"run"}; shift;
+    ""|rollback|versions|fast|full|restart|ssh)
+      CMD=${1:-"run"}; shift
       pre_command "$CMD" && \
       bash ./cmds/${CMD}.sh "${@}" && \
       post_command "$CMD"
+      ;;
+    clear-cache)
+      CMD=${1}; shift
+      bash ./cmds/${CMD}.sh "${@}"
       ;;
     shell)
       shift; exec bash "${@}"
@@ -94,11 +102,13 @@ main() {
       usage && exit 0
       ;;
     *)
-      echo "Invalid command ${1}."
+      echo "Invalid command ${1}. To see the available commands, please run:"
+      echo "  $ azk deploy --help"
   esac
 }
 
-export ROOT_PATH=`abs_dir ${BASH_SOURCE:-$0}`
+export MY_PATH="${BASH_SOURCE:-$0}"
+export ROOT_PATH=`abs_dir ${MY_PATH}`
 cd ${ROOT_PATH}
 
 # Importing set of utils functions

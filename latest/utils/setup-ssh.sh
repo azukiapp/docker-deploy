@@ -3,7 +3,12 @@ setup_ssh_keys() {
   PERSISTENT_SSH_PATH="${LOCAL_DOT_CONFIG_PATH}/ssh"
   mkdir -p ${PERSISTENT_SSH_PATH}
 
-  ln -s $PERSISTENT_SSH_PATH $LOCAL_ROOT_DOT_SSH_PATH
+  if [ -e ${LOCAL_ROOT_DOT_SSH_PATH} ]; then
+    echo "Ops, you should mount your '.ssh' folder on ${LOCAL_DOT_SSH_PATH}."
+    exit 1
+  fi
+
+  ln -s ${PERSISTENT_SSH_PATH} ${LOCAL_ROOT_DOT_SSH_PATH}
 
   LOCAL_DOT_SSH_PATH=${LOCAL_DOT_SSH_PATH:-"/azk/deploy/.ssh"}
   if [ -d ${LOCAL_DOT_SSH_PATH} ] && quiet ls ${LOCAL_DOT_SSH_PATH}/*.pub; then

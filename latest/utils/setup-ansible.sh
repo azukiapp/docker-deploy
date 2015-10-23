@@ -2,7 +2,17 @@ set -e
 
 check_remote_host() {
   if [ -z ${REMOTE_HOST} ]; then
-    echo "REMOTE_HOST is missing."
+    echo
+    echo "We're sorry, but azk couldn't detect to which server you want to deploy your application."
+    echo
+    echo "If you're going to deploy using a provider (e.g. DigitalOcean), perform a full deployment"
+    echo "by running:"
+    echo "  $ azk deploy full"
+    echo
+    echo "Otherwise, if you want to deploy directly to a server using its IP, be sure to add it into"
+    echo "'deploy' system envs in the Azkfile.js. Check this link for a reference:"
+    echo "  http://to.azk.io/DEPLOY_NO_REMOTE_HOST"
+    echo
     exit 1
   fi
 
@@ -16,7 +26,8 @@ check_remote_host() {
     done
 
     if [ ${RETRY} -ge ${MAX_RETRY} ]; then
-      echo "Failed to connect to server. Try again later."
+      echo
+      echo "Failed to connect to server. Please, try again."
       clear_config "REMOTE_HOST"
       exit 1
     fi

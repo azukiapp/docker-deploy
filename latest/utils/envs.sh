@@ -1,5 +1,5 @@
 rand_password() {
-  echo "$(date +%s | sha256sum | base64 | head -c 32 | sha256sum | awk '{print $1}')"
+  openssl rand -hex 10
 }
 
 export REMOTE_USER="${REMOTE_USER:-git}"
@@ -16,6 +16,6 @@ export AZK_AGENT_LOG_FILE="${AZK_AGENT_LOG_FILE:-"/tmp/azk-agent.log"}"
 export GIT_REF="${GIT_REF:-"master"}"
 export GIT_REMOTE="${GIT_REMOTE:-"azk_deploy"}"
 
-export PROJECTS_PATH="${PROJECTS_PATH:-"/home/${REMOTE_USER}"}"
+export PROJECTS_PATH="${PROJECTS_PATH:-"/home/$REMOTE_USER"}"
 
 export ENV_FILE="${ENV_FILE:-".env"}"
