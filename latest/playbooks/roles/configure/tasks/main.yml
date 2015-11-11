@@ -67,5 +67,5 @@
 - name: Set iptables to forward traffic to load balancer
   shell: "{{ item }}"
   with_items:
-  - "iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ docker_ip }}:{{ azk_balancer_port }}"
+  - "iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ ansible_docker0.ipv4.address }}:{{ azk_balancer_port }}"
   - "iptables-save > /etc/iptables/rules.v4"
