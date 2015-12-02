@@ -1,0 +1,36 @@
+---
+- name: Copy .env to server
+  copy:
+    src={{ local_project_path }}/{{ env_file }}
+    dest={{ remote_project_path }}/.env
+    owner={{ user }}
+    mode=0600
+
+# $HOME/.env
+- name: Adding load $HOME/.env file into .profile
+  lineinfile:
+    dest=/home/{{ user }}/.profile
+    line=". $HOME/.env"
+    regexp="^\. \$HOME\/\.env"
+    owner={{ user }}
+    mode=0644
+    state=present
+    insertafter=EOF
+    create=True
+
+- name: Adding env vars into $HOME/.env
+  lineinfile:
+    dest=/home/{{ user }}/.env
+    line="export {{ item.key }}=\"{{ item.value }}\""
+    regexp="^export\ {{ item.key }}="
+    owner={{ user }}
+    mode=0644
+    state=present
+    insertafter=EOF
+    create=True
+  with_items:
+  - { key: "HOST_IP", value: "{{ ansible_default_ipv4.address }}" }
+  - { key: "HOST_DOMAIN", value: "{{ host_domain }}" }
+  - { key: "AZK_AGENT_START_COMMAND", value: "{{ azk_agent_start_command }}" }
+  - { key: "AZK_RESTART_COMMAND", value: "{{ azk_restart_command }}" }
+  - { key: "GIT_REF", value: "{{ git_ref }}" }

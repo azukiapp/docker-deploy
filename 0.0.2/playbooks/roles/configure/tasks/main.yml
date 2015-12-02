@@ -1,0 +1,71 @@
+---
+- name: Create user and add him to docker group
+  user:
+    name={{ user }}
+    shell=/bin/bash
+    groups=docker
+    append=yes
+
+- name: Ensure /etc/resolver path exists
+  file:
+    path=/etc/resolver
+    state=directory
+
+- name: Ensure required directories exists
+  file:
+    path={{ item }}
+    state=directory
+    owner={{ user }}
+    group={{ user }}
+    mode=0775
+  with_items:
+  - "{{ git_dir }}"
+  - "{{ src_dir }}"
+  - "/home/{{ user }}/.ssh"
+  - "/home/{{ user }}/bin"
+
+- name: Ensure authorized_keys exists
+  copy:
+    src=authorized_keys
+    dest=/home/{{ user }}/.ssh/authorized_keys
+    owner={{ user }}
+    mode=0600
+
+- name: Create git repository
+  command:
+    chdir={{ git_dir }}
+    creates={{ git_dir }}/HEAD
+    git init --bare
+
+- name: Ensure repository permissions
+  command:
+    chdir={{ git_dir }}
+    chown {{ user }}.{{ user }} -R .
+
+- name: Apply templates
+  template:
+    src={{ item.src }}
+    dest={{ item.dest }}
+    owner={{ item.owner }}
+    mode={{ item.mode }}
+  with_items:
+  - { src: "azk-start.j2", dest: "/home/{{ user }}/bin/azk-start", owner: "{{ user }}", mode: "0755" }
+  - { src: "git-checkout.j2", dest: "/home/{{ user }}/bin/git-checkout", owner: "{{ user }}", mode: "0755" }
+  - { src: "rollback.j2", dest: "/home/{{ user }}/bin/rollback", owner: "{{ user }}", mode: "0755" }
+  - { src: "versions.j2", dest: "/home/{{ user }}/bin/versions", owner: "{{ user }}", mode: "0755" }
+  - { src: "post-receive.j2", dest: "{{ git_dir }}/hooks/post-receive", owner: "{{ user }}", mode: "0755" }
+  - { src: "Upstart.conf.j2", dest: "/etc/dbus-1/system.d/Upstart.conf", owner: "{{ remote_root_user }}", mode: "0644" }
+  - { src: "azk-agent.conf.j2", dest: "/etc/init/azk-agent.conf", owner: "{{ remote_root_user }}", mode: "0644" }
+  - { src: "azk-all.conf.j2", dest: "/etc/init/azk-all.conf", owner: "{{ remote_root_user }}", mode: "0644" }
+  - { src: "azk.conf.j2", dest: "/etc/init/azk.conf", owner: "{{ remote_root_user }}", mode: "0644" }
+  - { src: "resolver.j2", dest: "/etc/resolver/{{ azk_domain }}", owner: "{{ remote_root_user }}", mode: "0644" }
+
+- name: Restart dbus
+  command:
+    service dbus restart
+
+- name: Set iptables to forward traffic to load balancer
+  shell: "{{ item }}"
+  with_items:
+  - "iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j DNAT --to-destination {{ ansible_docker0.ipv4.address }}:{{ azk_balancer_port }}"
+  - "iptables-save > /etc/iptables/rules.v4"

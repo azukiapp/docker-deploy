@@ -1,0 +1,38 @@
+# This image includes:
+#
+# azukiapp/deploy:
+# * Alpine Linux
+# * Ansible
+# * SSHPass
+
+FROM alpine:3.2
+MAINTAINER Azuki <support@azukiapp.com>
+
+RUN mkdir -p /azk/deploy
+WORKDIR /azk/deploy
+
+COPY files ./files
+RUN packages=' \
+    bash \
+    g++ \
+    openssh \
+    sshpass \
+    git \
+    py-pip \
+    python-dev \
+  ' \
+  set -x \
+  && apk --update add $packages \
+  && pip install ansible \
+  && ansible-galaxy install -r files/requirements.txt \
+  && apk del g++ py-pip python-doc python-tests \
+             pkgconf pkgconfig \
+  && rm -rf /var/cache/apk/*
+
+COPY playbooks ./playbooks
+COPY cmds ./cmds
+COPY utils ./utils
+COPY *.sh ./
+
+ENTRYPOINT ["/azk/deploy/deploy.sh"]
+CMD ["/azk/deploy/deploy.sh"]

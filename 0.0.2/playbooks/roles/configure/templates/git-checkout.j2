@@ -1,0 +1,11 @@
+#!/bin/sh
+
+. /home/{{ user }}/.env
+
+GIT_REF=${1:-${GIT_REF}}
+
+echo "$> git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_REF} -f"
+if ! git --work-tree={{ src_dir }} --git-dir={{ git_dir }} checkout ${GIT_REF} -f; then
+  echo "Failed to load ${GIT_REF}"
+  exit 1
+fi

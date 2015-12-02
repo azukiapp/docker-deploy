@@ -1,0 +1,46 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -f $HOME/bin/git-checkout ] || [ ! -f $HOME/bin/azk-start ]; then
+  echo 'Missing required scripts. Run `azk deploy full` to fix it.'
+  exit 1
+fi
+
+if [ $# -eq 0 ] || [ $# -gt 1 ]; then
+  echo "Usage:"
+  echo "  $ rollback <git-ref>"
+  exit 1
+fi
+
+get_previous_ref() {
+  CURRENT_VERSION=$( git --git-dir={{ git_dir }} tag --points-at HEAD )
+  if [ -z $CURRENT_VERSION ]; then
+    return
+  fi
+
+  CURRENT_VERSION_INDEX=$( git --git-dir={{ git_dir }} tag -l 'v*' | sort -V | grep -n $CURRENT_VERSION | cut -d ':' -f1)
+
+  if [ -z $CURRENT_VERSION_INDEX ] || [ $CURRENT_VERSION_INDEX -le 1 ]; then
+    return
+  fi
+
+  git --git-dir={{ git_dir }} tag -l 'v*' | sort -V | sed -n "$(( CURRENT_VERSION_INDEX - 1))p"
+}
+
+GIT_REF="$1"
+
+if [ "$GIT_REF" = "__PREVIOUS__" ]; then
+  GIT_REF=$( get_previous_ref )
+  if [ -z $GIT_REF ]; then
+    echo "Unable to find a previous version to rollback."
+    exit 1
+  fi
+fi
+
+$HOME/bin/git-checkout $GIT_REF
+$HOME/bin/azk-start
+
+echo ""
+echo "  ↻ App was successfully restored to ${GIT_REF}."
+echo ""

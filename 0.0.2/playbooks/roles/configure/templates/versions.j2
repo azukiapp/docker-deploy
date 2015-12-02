@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -e
+
+if [ ! $# -eq 1 ]; then
+  echo "Usage:"
+  echo "  $ versions <git-dir>"
+  exit 1
+fi
+
+GIT_DIR="$1"
+
+VERSIONS=$(git --git-dir="$GIT_DIR" tag -n -l 'v*' | tac | sed 's/^v/    v/')
+CURRENT_TAG=$(git --git-dir="$GIT_DIR" tag --points-at HEAD)
+
+if [ ! -z $CURRENT_TAG ]; then
+  VERSIONS=$( echo "$VERSIONS" | sed -r "s/\ {2}($CURRENT_TAG)/➜ \1/" )
+fi
+
+echo "$VERSIONS"
+echo ""
