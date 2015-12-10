@@ -1,24 +1,34 @@
 # This image includes:
 #
 # azukiapp/deploy:
-# * Ubuntu 14.04
+# * Alpine Linux
 # * Ansible
 # * SSHPass
 
-FROM ansible/ubuntu14.04-ansible:stable
+FROM alpine:3.2
 MAINTAINER Azuki <support@azukiapp.com>
 
 RUN mkdir -p /azk/deploy
 WORKDIR /azk/deploy
 
 COPY files ./files
-RUN apt-get -y update \
-  && apt-get install -y sshpass curl python-pip git\
+RUN packages=' \
+    bash \
+    g++ \
+    openssh \
+    sshpass \
+    git \
+    py-pip \
+    python-dev \
+  ' \
+  set -x \
+  && apk --update add $packages \
+  && pip install ansible \
   && ansible-galaxy install -r files/requirements.txt \
-  && apt-get clean -qq \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && apk del g++ py-pip python-doc python-tests \
+             pkgconf pkgconfig \
+  && rm -rf /var/cache/apk/*
 
-# TODO: split to another Dockerfile
 COPY playbooks ./playbooks
 COPY cmds ./cmds
 COPY utils ./utils

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 . ${ROOT_PATH}/utils/utils.sh
 load_configs
 

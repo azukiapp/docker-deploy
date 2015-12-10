@@ -1,8 +1,0 @@
----
-- hosts: all
-  sudo: true
-  vars:
-    kill_ssh_command: pkill -f sshd
-  tasks:
-    - name: Reset SSH connection
-      command: "{{ kill_ssh_command }}"
