@@ -81,11 +81,6 @@ main() {
     fi
   fi
 
-  # This is a workaround because of https://github.com/docker/docker/issues/3753
-  [ "$1" = "/bin/sh" ] && shift
-  [ "$1" = "-c" ] && shift
-  [ "$1" = "${MY_PATH}" ] && shift
-
   case "$1" in
     ""|rollback|versions|fast|full|restart|ssh)
       CMD=${1:-"run"}; shift
@@ -102,6 +97,12 @@ main() {
       ;;
     help|-h|--help)
       usage && exit 0
+      ;;
+    /bin/*sh*)
+      CMD=${1:-"/bin/sh"}; shift
+      [ "$1" = "-c" ] && shift
+      [ "$1" = "${MY_PATH}" ] && shift
+      exec ${CMD} -c "${MY_PATH} $*"
       ;;
     *)
       echo "Invalid command ${1}. To see the available commands, please run:"
