@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 usage() {
   echo "Usage:"
   echo "  $ deploy.sh [command [args]]"
@@ -84,12 +82,6 @@ main() {
       ;;
     help|-h|--help)
       usage && exit 0
-      ;;
-    /bin/*sh*)
-      CMD=${1:-"/bin/sh"}; shift
-      [ "$1" = "-c" ] && shift
-      [ "$1" = "${MY_PATH}" ] && shift
-      exec ${CMD} -c "${MY_PATH} $*"
       ;;
     *)
       echo "Invalid command ${1}. To see the available commands, please run:"
