@@ -107,9 +107,20 @@ main() {
   esac
 }
 
+check_call() {
+  if echo "$1" | grep -qE '^/bin/.*sh$'; then
+    CMD=$1; shift
+    [ "$1" = "-c" ] && shift
+    echo "$1" | grep -qv "^${MY_PATH}" && SCRIPT_PATH="${MY_PATH} "
+    exec ${CMD} -c "${SCRIPT_PATH}$*"
+  fi
+}
+
 export MY_PATH="${BASH_SOURCE:-$0}"
 export ROOT_PATH=`abs_dir ${MY_PATH}`
 cd ${ROOT_PATH}
+
+check_call "${@}"
 
 # Importing set of utils functions
 . ${ROOT_PATH}/utils/utils.sh
