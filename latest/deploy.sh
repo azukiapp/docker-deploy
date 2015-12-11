@@ -61,28 +61,10 @@ post_command() {
 }
 
 main() {
-  load_configs
   check_project_src
+
   require utils/setup-ssh.sh
-
-  if [ "$1" = "--provider" ]; then
-    shift; export CURRENT_PROVIDER=$1; shift
-    if [ -f ${ROOT_PATH}/deploy-${CURRENT_PROVIDER}.sh ]; then
-      if [ -z $REMOTE_HOST ] || [ -z $PROVIDER ] || [ "${PROVIDER}" != "${CURRENT_PROVIDER}" ]; then
-        export RUN_PROVIDER="true"
-      fi
-    else
-      echo "Invalid provider ${CURRENT_PROVIDER}."
-      echo "Check if you have the file ${ROOT_PATH}/deploy-${CURRENT_PROVIDER}.sh available in this image, by running:"
-      echo "  $ azk deploy shell -c 'ls ${ROOT_PATH}/deploy-${CURRENT_PROVIDER}.sh'"
-      exit 1
-    fi
-  fi
-
-  # This is a workaround because of https://github.com/docker/docker/issues/3753
-  [ "$1" = "/bin/sh" ] && shift
-  [ "$1" = "-c" ] && shift
-  [ "$1" = "${MY_PATH}" ] && shift
+  . utils/check-provider.sh
 
   case "$1" in
     ""|rollback|versions|fast|full|restart|ssh)
@@ -108,11 +90,16 @@ main() {
 }
 
 check_call() {
+  . utils/check-provider.sh
+
   if echo "$1" | grep -qE '^/bin/.*sh$'; then
     CMD=$1; shift
     [ "$1" = "-c" ] && shift
-    echo "$1" | grep -qv "^${MY_PATH}" && SCRIPT_PATH="${MY_PATH} "
-    exec ${CMD} -c "${SCRIPT_PATH}$*"
+
+    CMD_ARGS=
+    echo "$1" | grep -qv "^${MY_PATH}" && CMD_ARGS="${CMD_ARGS} ${MY_PATH} "
+    [ ! -z "${CURRENT_PROVIDER}" ] && CMD_ARGS="${CMD_ARGS} --provider ${CURRENT_PROVIDER} "
+    exec ${CMD} -c "${CMD_ARGS}$*"
   fi
 }
 
@@ -120,9 +107,9 @@ export MY_PATH="${BASH_SOURCE:-$0}"
 export ROOT_PATH=`abs_dir ${MY_PATH}`
 cd ${ROOT_PATH}
 
-check_call "${@}"
-
 # Importing set of utils functions
 . ${ROOT_PATH}/utils/utils.sh
+load_configs
 
+check_call "${@}"
 main "${@}"
