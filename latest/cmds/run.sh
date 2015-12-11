@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 . ${ROOT_PATH}/utils/utils.sh
 load_configs
 
@@ -67,7 +65,8 @@ if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
   set_config "RUN_DEPLOY" "true"
 fi
 
-if [ "$( curl -sI "${REMOTE_HOST}" | head -1 | cut -d " " -f2 )" = "200" ]; then
+# Intentional use of `tac` to avoid read pipe to be closed before `curl` is done writing body
+if [ "$( curl -sI "${REMOTE_HOST}" | tac | tail -1 | cut -d " " -f2 )" = "200" ]; then
   analytics_track "deploy-success" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}\" }"
 else
   analytics_track "deploy-failed" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}\" }"
