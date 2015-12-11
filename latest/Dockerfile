@@ -25,8 +25,9 @@ RUN packages=' \
   && apk --update add $packages \
   && pip install ansible \
   && ansible-galaxy install -r files/requirements.txt \
-  && apk del g++ py-pip python-doc python-tests \
-             pkgconf pkgconfig \
+  && apk del g++ python-dev py-gdbm py-pip python-doc  \
+             python-tests pkgconf pkgconfig \
+  && apk add python \
   && rm -rf /var/cache/apk/*
 
 COPY playbooks ./playbooks
