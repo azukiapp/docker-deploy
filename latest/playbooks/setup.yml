@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  sudo: true
+  become: true
   roles:
     - role: angstwad.docker_ubuntu
       docker_pkg_name: docker-engine

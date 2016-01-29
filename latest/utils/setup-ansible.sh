@@ -47,6 +47,11 @@ generate_ansible_config_file() {
     ( [ ! -z ${REMOTE_ROOT_PASS} ] && echo -n "ansible_ssh_pass=${REMOTE_ROOT_PASS}" ) || true
     echo ""
   ) > /etc/ansible/hosts
+  (
+    echo "[defaults]"
+    echo "deprecation_warnings=False"
+    echo "command_warnings=False"
+  ) > /etc/ansible/ansible.cfg
 }
 
 export_envs() {

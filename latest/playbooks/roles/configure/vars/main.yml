@@ -1,3 +1,4 @@
 ---
 azk_balancer_port: 11000
 azk_dns_port: 53
+azk_accept_tos_command: "azk config set terms_of_use.accepted 1"

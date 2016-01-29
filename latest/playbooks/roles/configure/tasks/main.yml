@@ -6,6 +6,11 @@
     groups=docker
     append=yes
 
+- name: Accept azk terms of use
+  command: "{{ azk_accept_tos_command }}"
+  ignore_errors: yes
+  become_user: "{{ user }}"
+
 - name: Ensure /etc/resolver path exists
   file:
     path=/etc/resolver
@@ -38,9 +43,13 @@
     git init --bare
 
 - name: Ensure repository permissions
-  command:
-    chdir={{ git_dir }}
-    chown {{ user }}.{{ user }} -R .
+  file:
+    path={{ git_dir }}
+    state=directory
+    owner={{ user }}
+    group={{ user }}
+    mode=0775
+    recurse=true
 
 - name: Apply templates
   template:

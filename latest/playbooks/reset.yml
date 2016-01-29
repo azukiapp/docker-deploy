@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  sudo: true
+  become: true
   vars:
     kill_ssh_command: pkill -f sshd
   tasks:
