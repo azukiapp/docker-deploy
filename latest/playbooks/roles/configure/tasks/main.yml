@@ -9,6 +9,7 @@
 - name: Accept azk terms of use
   command: "{{ azk_accept_tos_command }}"
   ignore_errors: yes
+  no_log: True
   become_user: "{{ user }}"
 
 - name: Ensure /etc/resolver path exists

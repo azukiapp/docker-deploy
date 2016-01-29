@@ -1,4 +1,4 @@
 ---
 azk_keyserver: keyserver.ubuntu.com
 azk_keyid: 022856F6D78159DF43B487D5C82CF0628592D2C9
-azk_repo: "deb [arch=amd64] http://repo-stage.azukiapp.com trusty main"
+azk_repo: "deb [arch=amd64] http://repo.azukiapp.com trusty main"
