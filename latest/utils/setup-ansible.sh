@@ -19,7 +19,24 @@ check_remote_host() {
   if [ "${CHECK_SSH}" = "true" ]; then
     RETRY=0; MAX_RETRY=3
     until [ ${RETRY} -ge ${MAX_RETRY} ]; do
-      quiet nc -zw10 ${REMOTE_HOST} ${REMOTE_PORT} && break
+      # quiet nc -zw10 ${REMOTE_HOST} ${REMOTE_PORT} && break
+      status=$(ssh -o BatchMode=yes -o ConnectTimeout=5 root@${REMOTE_HOST} -p ${REMOTE_PORT} echo ok 2>&1)
+
+      if [[ $status == ok ]] ; then
+        echo "OK"
+        break
+      elif [[ $status == "Permission denied"* ]] ; then
+        echo " ** Invalid SSH Key"
+      elif [[ $status == *"Connection refused"* ]] ; then
+        echo " ** Connection refused. Check port: ${REMOTE_HOST}:${REMOTE_PORT}"
+      elif [[ $status == *"Could not resolve hostname"* ]] ; then
+        echo " ** Invalid host: ${REMOTE_HOST}:${REMOTE_PORT}"
+      elif [[ $status == "Host key verification failed."* ]] ; then
+        echo " ** Host key verification failed: ${REMOTE_HOST}:${REMOTE_PORT}"
+      elif [[ $status == *"Connection timed out"* ]] ; then
+        echo " ** Timeout. Server does not repond.: ${REMOTE_HOST}:${REMOTE_PORT}"
+      fi
+
       RETRY=`expr ${RETRY} + 1`
       echo "Server is not accepting SSH connections yet. Retrying... (${RETRY}/${MAX_RETRY})"
       sleep 5
