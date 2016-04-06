@@ -23,7 +23,7 @@ bump_version() {
 }
 
 $HOME/bin/git-checkout
-$HOME/bin/azk-start
+# $HOME/bin/azk-start
 
 # If it's not a rollback, bump a new version
 if [ ! $( git tag --points-at ${GIT_REF} ) ]; then

@@ -59,6 +59,9 @@ if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
     quiet git remote rm ${GIT_REMOTE} || true
     quiet git remote add ${GIT_REMOTE} ssh://${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PORT}${REMOTE_GIT_PATH} || true
     git push ${GIT_REMOTE} ${GIT_REF}
+
+    echo "Starting azk. Maybe downloading images be needed. Please be patient."
+    ${ROOT_PATH}/cmds/ssh.sh "cd ${REMOTE_PROJECT_PATH} && ${AZK_AGENT_START_COMMAND} && ${AZK_RESTART_COMMAND}"
   )
 
   # Ensure running this step in the next deploy run
