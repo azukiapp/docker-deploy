@@ -61,7 +61,7 @@ if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
     git push ${GIT_REMOTE} ${GIT_REF}
 
     echo "Starting azk. Maybe downloading images be needed. Please be patient."
-    ${ROOT_PATH}/cmds/ssh.sh "cd ${REMOTE_PROJECT_PATH} && ${AZK_AGENT_START_COMMAND} && ${AZK_RESTART_COMMAND}"
+    ${ROOT_PATH}/cmds/ssh.sh ". /home/${REMOTE_USER}/.env && cd ${REMOTE_PROJECT_PATH} && ${AZK_AGENT_START_COMMAND} && ${AZK_RESTART_COMMAND}"
   )
 
   # Ensure running this step in the next deploy run
