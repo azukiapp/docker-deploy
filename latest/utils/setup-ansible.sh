@@ -44,6 +44,7 @@ generate_ansible_config_file() {
     echo -n "default ansible_ssh_host=${REMOTE_HOST} "
     echo -n "ansible_ssh_port=${REMOTE_PORT} "
     echo -n "ansible_ssh_user=${REMOTE_ROOT_USER} "
+    echo -n "ansible_ssh_private_key_file=${SSH_PRIVATE_KEY_FILE_PATH} "
     ( [ ! -z ${REMOTE_ROOT_PASS} ] && echo -n "ansible_ssh_pass=${REMOTE_ROOT_PASS}" ) || true
     echo ""
   ) > /etc/ansible/hosts

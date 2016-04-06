@@ -45,7 +45,8 @@ The following environment variables are available for configuring the deployment
 - **RUN_CONFIGURE** (*optional, default: true*): Boolean variable that defines if the remote server configuration should be run;
 - **RUN_DEPLOY** (*optional, default: true*): Boolean variable that defines if the deploy step should be run;
 - **DISABLE_ANALYTICS_TRACKER** (*optional, default: false*): Boolean variable that defines either azk should track deploy anonymous data or not;
-- **ENV_FILE** (*optional, default: `.env`*): The `.env file` path that will be copied to remote server.
+- **ENV_FILE** (*optional, default: `.env`*): The `.env file` path that will be copied to remote server;
+- **SSH_PRIVATE_KEY_FILE** (*optional, default: `id_rsa`*): The SSH private key filename that will be used to generate and/or connect to the droplet. The public key is considered `SSH_PRIVATE_KEY_FILE.pub`.
 
 ### Usage
 

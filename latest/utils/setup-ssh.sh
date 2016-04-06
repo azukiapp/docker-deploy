@@ -3,6 +3,10 @@ setup_ssh_keys() {
   PERSISTENT_SSH_PATH="${LOCAL_DOT_CONFIG_PATH}/ssh"
   mkdir -p ${PERSISTENT_SSH_PATH}
 
+  SSH_PRIVATE_KEY_FILE_PATH="${LOCAL_ROOT_DOT_SSH_PATH}/${SSH_PRIVATE_KEY_FILE:-id_rsa}"
+  SSH_PUBLIC_KEY_FILE_PATH="${SSH_PRIVATE_KEY_FILE_PATH}.pub"
+  SSH_KEY_NAME="${SSH_KEY_NAME}"
+
   LOCAL_DOT_SSH_PATH=${LOCAL_DOT_SSH_PATH:-"/azk/deploy/.ssh"}
 
   if [ ! -L ${LOCAL_ROOT_DOT_SSH_PATH} ]; then
@@ -16,11 +20,11 @@ setup_ssh_keys() {
 
   if [ -d ${LOCAL_DOT_SSH_PATH} ] && quiet ls ${LOCAL_DOT_SSH_PATH}/*.pub; then
     if [ "${LOCAL_DOT_SSH_PATH%/}" != "${LOCAL_ROOT_DOT_SSH_PATH}" ]; then
-      cp -R ${LOCAL_DOT_SSH_PATH}/* ${LOCAL_ROOT_DOT_SSH_PATH}
+      cp -R ${LOCAL_DOT_SSH_PATH}/${SSH_PRIVATE_KEY_FILE}* ${LOCAL_ROOT_DOT_SSH_PATH}
     fi
   else
-    if ! quiet ls ${LOCAL_ROOT_DOT_SSH_PATH}/id_rsa.pub; then
-      ssh-keygen -t rsa -b 4096 -N "" -f ${LOCAL_ROOT_DOT_SSH_PATH}/id_rsa
+    if ! quiet ls "${SSH_PUBLIC_KEY_FILE_PATH}"; then
+      ssh-keygen -t rsa -b 4096 -N "" -f "${SSH_PRIVATE_KEY_FILE_PATH}"
     fi
   fi
 }

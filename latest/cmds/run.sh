@@ -65,19 +65,31 @@ if [ -z ${RUN_DEPLOY} ] || [ "${RUN_DEPLOY}" = "true" ]; then
   set_config "RUN_DEPLOY" "true"
 fi
 
+echo
+
 # Intentional use of `tac` to avoid read pipe to be closed before `curl` is done writing body
 if [ "$( curl -sI "${REMOTE_HOST}" | tac | tail -1 | cut -d " " -f2 )" = "200" ]; then
   analytics_track "deploy-success" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}\" }"
+
+  if [ -z "${HOST_DOMAIN}" ]; then
+    echo "App successfully deployed at http://${REMOTE_HOST}"
+  else
+    echo "App successfully deployed at http://${HOST_DOMAIN} (${REMOTE_HOST})"
+  fi
 else
   analytics_track "deploy-failed" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}\" }"
+
+  clear_config "RUN_SETUP"
+  clear_config "RUN_CONFIGURE"
+  clear_config "RUN_DEPLOY"
+
+  if [ -z "${HOST_DOMAIN}" ]; then
+    echo "Failed to deploy app to http://${REMOTE_HOST}"
+  else
+    echo "Failed to deploy app to http://${HOST_DOMAIN} (${REMOTE_HOST})"
+  fi
 fi
 
 echo
-if [ -z "${HOST_DOMAIN}" ]; then
-  echo "App successfully deployed at http://${REMOTE_HOST}"
-else
-  echo "App successfully deployed at http://${HOST_DOMAIN} (${REMOTE_HOST})"
-fi
-echo ""
 
 set +e
