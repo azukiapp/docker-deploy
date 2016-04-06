@@ -1,4 +1,20 @@
 ---
+- name: "Check if Docker Engine is installed"
+  command: dpkg-query -W {{ docker.pkg.name }}
+  register: docker_engine_check_deb
+  failed_when: docker_engine_check_deb.rc > 1
+  changed_when: docker_engine_check_deb.rc == 1
+
+- name: Download Docker Engine deb package
+  get_url:
+    url="https://apt.dockerproject.org/repo/pool/main/d/{{ docker.pkg.name }}/{{ docker.pkg.name }}_{{ docker.pkg.version }}.deb"
+    dest="{{ docker.pkg.target }}/{{ docker.pkg.name }}_{{ docker.pkg.version }}.deb"
+  when: docker_engine_check_deb.rc == 1
+
+- name: Install Docker Engine
+  apt: deb="{{ docker.pkg.target }}/{{ docker.pkg.name }}_{{ docker.pkg.version }}.deb"
+  when: docker_engine_check_deb.rc == 1
+
 - name: Start docker service
   service: name=docker state=started
 

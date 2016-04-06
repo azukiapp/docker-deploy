@@ -11,7 +11,6 @@ MAINTAINER Azuki <support@azukiapp.com>
 RUN mkdir -p /azk/deploy
 WORKDIR /azk/deploy
 
-COPY files ./files
 RUN packages=' \
     bash \
     g++ \
@@ -24,7 +23,6 @@ RUN packages=' \
   set -x \
   && apk --update add $packages \
   && pip install ansible \
-  && ansible-galaxy install -r files/requirements.txt \
   && apk del g++ python-dev py-gdbm py-pip python-doc  \
              python-tests pkgconf pkgconfig \
   && apk add python \

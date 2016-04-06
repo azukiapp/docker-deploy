@@ -1,7 +1,11 @@
 ---
 - hosts: all
   become: true
+  vars:
+    docker:
+      pkg:
+        name: docker-engine
+        version: 1.9.1-0~trusty_amd64
+        target: /tmp
   roles:
-    - role: angstwad.docker_ubuntu
-      docker_pkg_name: docker-engine
     - role: install
