@@ -71,7 +71,7 @@ fi
 echo
 
 # Intentional use of `tac` to avoid read pipe to be closed before `curl` is done writing body
-if [ "$( curl -sI "${REMOTE_HOST}" | tac | tail -1 | cut -d " " -f2 )" = "200" ]; then
+if [ "$( curl -sLI "${REMOTE_HOST}" | tac | tail -1 | cut -d " " -f2 )" = "200" ]; then
   analytics_track "deploy-success" "{ \"mid\": \"${AZK_MID}\", \"uid\": \"${AZK_UID}\" }"
 
   if [ -z "${HOST_DOMAIN}" ]; then
