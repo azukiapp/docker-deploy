@@ -77,8 +77,13 @@ main() {
       CMD=${1}; shift
       bash ./cmds/${CMD}.sh "${@}"
       ;;
-    shell)
-      shift; exec bash -c "${@}"
+    shell|exec)
+      shift;
+      if [[ "$1" == "-c" ]]; then
+        shift;
+        set -- bash -c "${@}"
+      fi
+      exec "${@}"
       ;;
     help|-h|--help)
       usage && exit 0
