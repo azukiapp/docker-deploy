@@ -79,7 +79,9 @@ main() {
       ;;
     shell|exec)
       shift;
-      if [[ "$1" == "-c" ]]; then
+      if [[ $# -eq 0 ]]; then
+        set -- bash "${@}"
+      elif [[ "$1" == "-c" ]]; then
         shift;
         set -- bash -c "${@}"
       fi
