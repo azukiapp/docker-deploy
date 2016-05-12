@@ -5,6 +5,7 @@ Base docker image to deploy an app using [`azk`](http://azk.io)
 
 Initial Considerations
 ---
+
 We strongly recommend you to use Ubuntu 14.04 x86-64 in the target server.
 Using this image with any other OS in the target server is untested yet and it's potentially broken.
 
@@ -12,18 +13,22 @@ Versions (tags)
 ---
 
 <versions>
-- [`latest, 0.0.2`](https://github.com/azukiapp/docker-deploy/blob/master/latest/Dockerfile)
+- [`latest`](https://github.com/azukiapp/docker-deploy/blob/master/latest/Dockerfile)
+- [`0.0.4`](https://github.com/azukiapp/docker-deploy/blob/v0.0.4/latest/Dockerfile)
+- [`0.0.3`](https://github.com/azukiapp/docker-deploy/blob/v0.0.3/latest/Dockerfile)
+- [`0.0.2`](https://github.com/azukiapp/docker-deploy/blob/v0.0.2/latest/Dockerfile)
 - [`0.0.1`](https://github.com/azukiapp/docker-deploy/blob/v0.0.1/latest/Dockerfile)
 </versions>
 
 Image content:
 ---
 
-- Ubuntu 14.04 (v0.0.1) or Alpine Linux (v0.0.2 or later)
+- Alpine Linux (v0.0.2 or later) or Ubuntu 14.04 (v0.0.1)
 - [Ansible](http://www.ansible.com)
 - [SSHPass](http://sourceforge.net/projects/sshpass/)
 
 ### Configuration
+
 The following environment variables are available for configuring the deployment using this image:
 
 - **REMOTE_HOST**: Deploy server's public IP;
