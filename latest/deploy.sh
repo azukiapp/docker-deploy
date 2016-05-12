@@ -78,7 +78,7 @@ main() {
       bash ./cmds/${CMD}.sh "${@}"
       ;;
     shell)
-      shift; exec bash "${@}"
+      shift; exec bash -c "${@}"
       ;;
     help|-h|--help)
       usage && exit 0
