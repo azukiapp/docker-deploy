@@ -5,7 +5,7 @@
 # * Ansible
 # * SSHPass
 
-FROM alpine:3.3
+FROM alpine:3.4
 MAINTAINER Azuki <support@azukiapp.com>
 
 RUN mkdir -p /azk/deploy
@@ -13,21 +13,15 @@ WORKDIR /azk/deploy
 
 RUN packages=' \
     bash \
-    g++ \
     openssh \
     sshpass \
     git \
-    py-pip \
-    python-dev \
-    libffi-dev \
-    openssl-dev \
+    curl \
+    openssl \
+    ansible \
   ' \
   set -x \
   && apk --update add $packages \
-  && pip install ansible \
-  && apk del g++ python-dev py-gdbm py-pip python-doc  \
-             python-tests pkgconf pkgconfig \
-  && apk add python \
   && rm -rf /var/cache/apk/*
 
 COPY playbooks ./playbooks
