@@ -2,7 +2,7 @@
 - hosts: all
   become: true
   vars:
-    kill_ssh_command: pkill -f sshd
+    kill_ssh_command: "kill -9 $(ps aux | egrep 'sshd: [a-zA-Z]+@' | head  -n 1 | tr -s ' ' | cut -f 2 -d ' ')"
   tasks:
     - name: Reset SSH connection
       command: "{{ kill_ssh_command }}"
